@@ -1,5 +1,5 @@
 [package]
-name = "candle-nn"
+name = "candle-nn-fathomdb"
 version.workspace = true
 edition.workspace = true
 description.workspace = true
@@ -8,6 +8,9 @@ keywords.workspace = true
 categories.workspace = true
 license.workspace = true
 readme = "README.md"
+
+[lib]
+name = "candle_nn"
 
 [dependencies]
 accelerate-src = { workspace = true, optional = true }
