@@ -1364,6 +1364,11 @@ impl Map2 for MatMul {
     ) -> Result<Vec<T>> {
         use gemm::{gemm, Parallelism};
 
+        #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
+        if T::DTYPE == DType::F16 {
+            return Err(Error::UnsupportedDTypeForOp(T::DTYPE, "matmul").bt());
+        }
+
         match T::DTYPE {
             DType::F16 | DType::F32 | DType::F64 => {}
             _ => Err(Error::UnsupportedDTypeForOp(T::DTYPE, "matmul").bt())?,

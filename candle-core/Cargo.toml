@@ -20,7 +20,6 @@ candle-metal-kernels = { workspace = true, optional = true }
 objc2-metal = { workspace = true, optional = true }
 objc2-foundation = { workspace = true, optional = true }
 cudarc = { workspace = true, optional = true }
-gemm = { workspace = true }
 half = { workspace = true }
 float8 = { workspace = true }
 intel-mkl-src = { workspace = true, optional = true }
@@ -41,6 +40,15 @@ tokenizers = { workspace = true, features = ["onig"] }
 
 [target.'cfg(all(not(target_arch = "wasm32"), not(target_os = "ios")))'.dependencies]
 candle-ug = { workspace = true, optional = true }
+
+[target.'cfg(all(target_arch = "aarch64", target_os = "linux"))'.dependencies]
+# Gemm's F16 backend emits `fullfp16` instructions unavailable on the Tier-1
+# Linux AArch64 baseline. CPU F16 matmul returns Candle's unsupported-dtype
+# error on this target; FathomDB's shipped models use F32.
+gemm = { version = "0.19.0", default-features = false, features = ["std", "rayon", "wasm-simd128-enable"] }
+
+[target.'cfg(not(all(target_arch = "aarch64", target_os = "linux")))'.dependencies]
+gemm = { version = "0.19.0", features = ["wasm-simd128-enable"] }
 
 [dev-dependencies]
 anyhow = { workspace = true }
