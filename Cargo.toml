@@ -32,7 +32,7 @@ candle = { path = "./candle-core", package = "candle-core-fathomdb", version = "
 candle-datasets = { path = "./candle-datasets", version = "0.10.2" }
 candle-flash-attn = "0.10.2"
 candle-flash-attn-v3 = "0.10.2"
-candle-kernels = "0.10.2"
+candle-kernels = { path = "./candle-kernels", version = "0.10.2" }
 candle-metal-kernels = "0.10.2"
 candle-nn = { path = "./candle-nn", package = "candle-nn-fathomdb", version = "0.10.2" }
 candle-onnx = "0.10.2"

@@ -55,7 +55,18 @@ fn main() -> Result<()> {
     moe_builder.build_lib(out_dir.join("libmoe.a"))?;
     println!("cargo:rustc-link-search={}", out_dir.display());
     println!("cargo:rustc-link-lib=moe");
-    println!("cargo:rustc-link-lib=dylib=cudart");
+    // A CUDA-capable Candle consumer must still map its module and execute the
+    // CPU path on a host without a CUDA runtime. Dynamic libcudart makes the
+    // ELF loader reject the module before its runtime device policy can choose
+    // CPU. Link the runtime statically; CUDA driver discovery remains in
+    // cudarc's dynamic-loading path and begins only when CUDA is selected.
+    println!("cargo:rustc-link-lib=static=cudart_static");
+    if !is_target_msvc {
+        // Dependencies required by CUDA's static runtime on Linux.
+        println!("cargo:rustc-link-lib=dl");
+        println!("cargo:rustc-link-lib=rt");
+        println!("cargo:rustc-link-lib=pthread");
+    }
     if !is_target_msvc {
         println!("cargo:rustc-link-lib=stdc++");
     }
