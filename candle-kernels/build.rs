@@ -60,6 +60,15 @@ fn main() -> Result<()> {
     // ELF loader reject the module before its runtime device policy can choose
     // CPU. Link the runtime statically; CUDA driver discovery remains in
     // cudarc's dynamic-loading path and begins only when CUDA is selected.
+    if let Ok(cuda_path) = env::var("CUDA_PATH") {
+        let target = env::var("TARGET").unwrap_or_default();
+        let cuda_target = if target.contains("aarch64") {
+            "aarch64-linux"
+        } else {
+            "x86_64-linux"
+        };
+        println!("cargo:rustc-link-search=native={cuda_path}/targets/{cuda_target}/lib");
+    }
     println!("cargo:rustc-link-lib=static=cudart_static");
     if !is_target_msvc {
         // Dependencies required by CUDA's static runtime on Linux.
