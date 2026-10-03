@@ -69,7 +69,7 @@ fn main() -> Result<()> {
         };
         println!("cargo:rustc-link-search=native={cuda_path}/targets/{cuda_target}/lib");
     }
-    println!("cargo:rustc-link-lib=static=cudart_static");
+    println!("cargo:rustc-link-lib=static:+whole-archive=cudart_static");
     if !is_target_msvc {
         // Dependencies required by CUDA's static runtime on Linux.
         println!("cargo:rustc-link-lib=dl");
