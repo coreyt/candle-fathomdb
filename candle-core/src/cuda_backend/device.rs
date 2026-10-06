@@ -253,6 +253,24 @@ impl CudaDevice {
     pub fn new_with_stream(ordinal: usize) -> Result<Self> {
         let context = cudarc::driver::CudaContext::new(ordinal).w()?;
         let stream = context.new_stream().w()?;
+        Self::from_context_and_stream(context, stream)
+    }
+
+    /// Builds a device on an existing cudarc context, on that context's
+    /// default stream, as [`BackendDevice::new`] does for a context it
+    /// creates itself. Every allocation of the device goes through the
+    /// context's allocator, so a caller can choose that allocator (for
+    /// example a context created with its own memory pool) before Candle
+    /// uses the device.
+    pub fn from_context(context: Arc<cudarc::driver::CudaContext>) -> Result<Self> {
+        let stream = context.default_stream();
+        Self::from_context_and_stream(context, stream)
+    }
+
+    fn from_context_and_stream(
+        context: Arc<cudarc::driver::CudaContext>,
+        stream: Arc<cudarc::driver::CudaStream>,
+    ) -> Result<Self> {
         let blas = cudarc::cublas::CudaBlas::new(stream.clone()).w()?;
         let curand = cudarc::curand::CudaRng::new(299792458, stream.clone()).w()?;
         let module_store = ModuleStore {
@@ -276,22 +294,7 @@ impl BackendDevice for CudaDevice {
 
     fn new(ordinal: usize) -> Result<Self> {
         let context = cudarc::driver::CudaContext::new(ordinal).w()?;
-        let stream = context.default_stream();
-        let blas = cudarc::cublas::CudaBlas::new(stream.clone()).w()?;
-        let curand = cudarc::curand::CudaRng::new(299792458, stream.clone()).w()?;
-        let module_store = ModuleStore {
-            mdls: [const { None }; kernels::ALL_IDS.len()],
-        };
-        Ok(Self {
-            id: DeviceId::new(),
-            context,
-            stream,
-            blas: Arc::new(blas),
-            curand: Arc::new(Mutex::new(CudaRng(curand))),
-            modules: Arc::new(std::sync::RwLock::new(module_store)),
-            custom_modules: Arc::new(std::sync::RwLock::new(HashMap::new())),
-            seed_value: Arc::new(RwLock::new(299792458)),
-        })
+        Self::from_context(context)
     }
 
     fn set_seed(&self, seed: u64) -> Result<()> {
@@ -706,5 +709,22 @@ impl BackendDevice for CudaDevice {
     fn synchronize(&self) -> Result<()> {
         self.stream.synchronize().map_err(crate::Error::wrap)?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod from_context_tests {
+    use super::*;
+
+    #[test]
+    fn a_device_from_a_context_uses_that_context_and_its_default_stream() {
+        let context = cudarc::driver::CudaContext::new(0).unwrap();
+        let device = CudaDevice::from_context(context.clone()).unwrap();
+        assert!(Arc::ptr_eq(device.cuda_stream().context(), &context));
+        assert_eq!(device.cuda_stream().cu_stream(), context.default_stream().cu_stream());
+        let other = CudaDevice::new(0).unwrap();
+        assert!(!device.same_device(&other), "each device keeps its own id");
+        let t = crate::Tensor::new(&[1f32, 2., 3.], &crate::Device::Cuda(device)).unwrap();
+        assert_eq!(t.sum_all().unwrap().to_scalar::<f32>().unwrap(), 6.);
     }
 }

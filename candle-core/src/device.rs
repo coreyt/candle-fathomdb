@@ -251,6 +251,15 @@ impl Device {
         }
     }
 
+    /// A CUDA device on an existing cudarc context (see
+    /// [`crate::CudaDevice::from_context`]).
+    #[cfg(feature = "cuda")]
+    pub fn new_cuda_from_context(
+        context: std::sync::Arc<crate::cuda_backend::cudarc::driver::CudaContext>,
+    ) -> Result<Self> {
+        Ok(Self::Cuda(crate::CudaDevice::from_context(context)?))
+    }
+
     pub fn new_cuda_with_stream(ordinal: usize) -> Result<Self> {
         Ok(Self::Cuda(crate::CudaDevice::new_with_stream(ordinal)?))
     }
