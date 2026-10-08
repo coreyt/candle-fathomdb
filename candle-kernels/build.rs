@@ -7,6 +7,9 @@ fn main() -> Result<()> {
     println!("cargo::rerun-if-changed=src/compatibility.cuh");
     println!("cargo::rerun-if-changed=src/cuda_utils.cuh");
     println!("cargo::rerun-if-changed=src/binary_op_macros.cuh");
+    // CUDA_PATH selects the cudart_static search path below; without this a
+    // build first run without it keeps failing to link after it is set.
+    println!("cargo::rerun-if-env-changed=CUDA_PATH");
 
     // Build for PTX
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
