@@ -1,6 +1,6 @@
 [package]
 name = "candle-core-fathomdb"
-version.workspace = true
+version = "0.10.3"
 edition.workspace = true
 description.workspace = true
 repository.workspace = true

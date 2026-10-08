@@ -28,15 +28,15 @@ ab_glyph = "0.2.23"
 accelerate-src = { version = "0.3.2" }
 anyhow = { version = "1", features = ["backtrace"] }
 byteorder = "1.4.3"
-candle = { path = "./candle-core", package = "candle-core-fathomdb", version = "0.10.2" }
+candle = { path = "./candle-core", package = "candle-core-fathomdb", version = "0.10.3" }
 candle-datasets = { path = "./candle-datasets", version = "0.10.2" }
 candle-flash-attn = "0.10.2"
 candle-flash-attn-v3 = "0.10.2"
 candle-kernels = { path = "./candle-kernels", version = "0.10.2" }
 candle-metal-kernels = "0.10.2"
-candle-nn = { path = "./candle-nn", package = "candle-nn-fathomdb", version = "0.10.2" }
+candle-nn = { path = "./candle-nn", package = "candle-nn-fathomdb", version = "0.10.3" }
 candle-onnx = "0.10.2"
-candle-transformers = { path = "./candle-transformers", package = "candle-transformers-fathomdb", version = "0.10.2" }
+candle-transformers = { path = "./candle-transformers", package = "candle-transformers-fathomdb", version = "0.10.3" }
 candle-ug = "0.10.2"
 clap = { version = "4.2.4", features = ["derive"] }
 criterion = { version = "0.8", default-features = false }
