@@ -25,3 +25,19 @@ Newest entries last. Shas are verified from git.
   13.0 workspace build (T-WS-BUILD) runs, and correct § 14 (0.11.0 is on
   cudarc 0.19.8).
 - Next: FK2 (implementer: RED test, then K7).
+
+## FK2 (2026-10-12)
+
+| Step | Commit | Class | Evidence |
+| --- | --- | --- | --- |
+| RED | `d4ffdf58` | `L` | `cargo test -p candle-core-fathomdb --features cuda --test cuda_private_pool --no-run` fails: E0432 `AllocMode`, `CudaMemPool`, `MemPoolProps` not in `driver`; E0599 no `new_with_mem_pool` (registry cudarc 0.19.10) |
+| GREEN (K7) | `0d6fa138` | `P` | root `Cargo.toml` line 43 only; RTX 3090 index 0, K-G1 environment: `cuda_private_pool` 3/3 pass, `cuda_from_context` pass; CK-AC-01 one `cudarc-fathomdb` node `#b777f8d9`, no `cudarc v` line, for all three crates |
+
+- No build fix needed. Guard 580.178.04 ×3 and `/usr/local/cuda-12.6`
+  before and after.
+- Pre-existing, not from FK2: `cargo fmt --check` differs at
+  `candle-core/src/cuda_backend/device.rs:721` (K5) and
+  `candle-core/tests/aarch64_linux_cpu.rs:7` (K2); clippy 0.1.95
+  `collapsible_match` at `candle-core/src/npy.rs:121` (upstream). The new
+  test is clean under rustfmt and clippy `-D warnings`.
+- Next: R-FK-CODE (Opus).
