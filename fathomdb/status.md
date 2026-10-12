@@ -18,4 +18,10 @@ Newest entries last. Shas are verified from git.
   and K-G2 venue).
 - cudarc commit to pin: `C` = `b777f8d94eedca8334e9331cf520d554b22544b7`
   (cudarc R-FC-VERIFY APPROVE-WITH-NOTES, 2026-10-12).
-- Next: R-FK-PLAN (Opus), then FK2.
+- R-FK-PLAN (Opus): APPROVE-WITH-FIXES at `362fc4f2`; fixes in the next
+  commit (`review.md`).
+- Open for FathomDB (R-FK-PLAN M6): Slice 31 plan revision 14 must point
+  AC31-03b's 13.0 Candle evidence at K-G2 on GCP, rule where FathomDB's
+  13.0 workspace build (T-WS-BUILD) runs, and correct § 14 (0.11.0 is on
+  cudarc 0.19.8).
+- Next: FK2 (implementer: RED test, then K7).

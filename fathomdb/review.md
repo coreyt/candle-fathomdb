@@ -22,3 +22,33 @@ Every review is an independent Opus subagent, read-only (plan § 8).
 | L5 | CK-AC-03 excluded the new test; no lockfile is tracked | test file allowed; receipts record `Cargo.lock` SHA-256 and `cargo tree` |
 | L6 | `cargo tree` commands wrong at a virtual workspace root | `-p candle-core-fathomdb`; "did not match" is the expected pass |
 | L13 | re-qualification rows missing | rows for source/tests, manifests and K8 |
+
+## R-FK-PLAN (FK1), 2026-10-12
+
+- Model: `opus` (Claude Opus), general-purpose, read-only; it built the
+  § 5.2 test in scratch against cudarc `b777f8d` and ran it on RTX 3090
+  index 0 (k = 3, pass), and probed CK-AC-01, CK-AC-04 and DK-4.
+- Reviewed: `requirements.md`, `FATHOMDB.md` and plan revision 3 at
+  `362fc4f2`.
+- Verdict: APPROVE-WITH-FIXES (1 High, 6 Medium, 10 Low). All fixed in the
+  next commit except M6, which is FathomDB's.
+
+| Finding | Defect (short) | Disposition |
+| --- | --- | --- |
+| H1 | CK-AC-01 item 2 exits 0 ("nothing to print") because the lock lists registry `cudarc` for optional chains; item 1's fragment is 8 hex characters | CK-AC-01 reads the normal tree (`--prefix none`, `grep '^cudarc v'` empty) and expects `#b777f8d9`; plan § 4 updated; supersedes part-1 L6's "did not match" wording |
+| M1 | cell environments lacked `CUDA_PATH` (K4 needs it), `PATH` to `nvcc`, and K-G3's `CUDARC_CUDA_VERSION` | full environment per cell in § 5.3 |
+| M2 | control comparison under-specified: no `cuda_private_pool` at the control; independent lock resolution (`^0.19.4` resolves to 0.19.10; cudaforge 0.1.6) | K's lock copied into the control tree, lock diff recorded (§ 5.1); CK-AC-04 compares like binaries; RED rationale and DK-3 version text corrected |
+| M3 | K-G1 did not test the x86 release setting `CUDA_COMPUTE_CAP=75` | "K-G1 at 75" runs T1 and T2 |
+| M4 | K-G2 silent on the known sm_75 `ones_gpu` failure, the control's session, and the driver version | § 2: `ones_gpu` expected on sm_75 (equal at control), control in the same VM session, driver and `nvcc` recorded |
+| M5 | DK-4's default-pool measurement reads 0: cuBLAS workspace and cuRAND state use no pool (measured) | DK-4 records the measurement; D-14 input is per-process device memory (VmRSS on Orin), default-pool counters as a leak check only |
+| M6 | FathomDB Slice 31 plan revision 13 still assumes a `windchill3` 13.0 download and says 0.11.0 is on cudarc 0.19.10 | FathomDB's: open for plan revision 14 (recorded in `status.md`) |
+| L1 | classes of the FK2 commits unstated | RED test `L`, K7 `P`; `FATHOMDB.md` row K7t |
+| L2 | `flash-attn` chain to registry `cudarc` not listed | listed out of scope with `candle-ug` |
+| L3 | DK-1 diff stat not reproducible | command given |
+| L4 | DK-2 online case now measured | DK-2 updated |
+| L5 | CK-AC-04 on K-G1 only | K-G1 and K-G3 |
+| L6 | CK-AC-02 has no mutation check | R-FK-CODE runs it with `Device::new_cuda(0)`; must fail at `>= 16 MiB` |
+| L7 | plan § 2 date of `c68b2499` | "committed 2026-10-02, fetched 2026-10-12" |
+| L8 | `__hmax_nan` guard | noted as no risk for 13.x (§ 2) |
+| L9 | loaded CUDA library files not recorded | § 5.1 item 4 (`LD_DEBUG=files`) |
+| L10 | no candle-transformers row | T8 `cargo check` |

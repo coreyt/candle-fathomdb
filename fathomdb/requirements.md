@@ -47,9 +47,22 @@ A Spot VM is used for test and verification only, never for development,
 because a preemption loses its disk: the VM receives a source bundle of the
 commit under test and returns receipts; no code is written there. The
 receipt names the GPU, so a T4 or L4 result is never reported as an RTX 3090
-result. The VM installs only driver branch 580 (the `windchill3` branch) and
-the CUDA 13.0 toolkit (`cuda-toolkit-13-0`), so the cell answers the K-G2
-question: Candle built with the 13.0 toolkit runs on a 580 driver.
+result. The VM installs only driver branch 580 (the `windchill3` branch;
+the GCP pilot installed 580.178.04, the `windchill3` version) and the CUDA
+13.0 toolkit (`cuda-toolkit-13-0`), so the cell answers the K-G2 question:
+Candle built with the 13.0 toolkit runs on a 580 driver. The receipt records
+`nvidia-smi` and `nvcc --version`; a 580 point release other than 580.178.04
+is recorded, not hidden. The `859b8ea1` control runs in the same VM
+session, after the runs at `K`.
+
+Expected on sm_75 (T4, and the x86 release build at
+`CUDA_COMPUTE_CAP=75`): `ones_gpu` fails, because the BF16 and F8 fill
+kernels are built only for sm_80 and later (`candle-kernels/src/fill.cu`,
+`#if __CUDA_ARCH__ >= 800`); the 2026-10-12 T4 build trial saw exactly this
+(FathomDB Slice 31 plan § 15 Q13). It must fail equally at the control.
+On an L4 (sm_89) it is expected to pass. The `__hmax_nan` guard in
+`candle-kernels/src/compatibility.cuh:10` is true for a 13.0 build below
+sm_75, which 13.x cannot target, so it is not a risk here.
 
 ## 3. Requirements and acceptance criteria
 
@@ -67,18 +80,22 @@ fails closed against an unpatched cudarc.
 
 **CK-AC-01:**
 
-1. `cargo tree -p candle-core-fathomdb --features cuda -i cudarc-fathomdb -e normal`
-   shows exactly one `cudarc-fathomdb v0.19.10` node, whose source is
-   `https://github.com/coreyt/cudarc.git?rev=<C>#<C>`.
-2. `cargo tree -p candle-core-fathomdb --features cuda -i cudarc -e normal`
-   exits non-zero with "did not match any packages" (the expected pass:
-   no registry `cudarc` node).
+1. `cargo tree -p candle-core-fathomdb --features cuda -e normal --prefix none | grep -E '^cudarc-fathomdb v' | sort -u`
+   prints exactly one line,
+   `cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=<C>#b777f8d9)`
+   (Cargo prints the fragment as 8 hex characters).
+2. `cargo tree -p candle-core-fathomdb --features cuda -e normal --prefix none | grep -E '^cudarc v'`
+   prints nothing. The exit status of `cargo tree -i cudarc` is not used:
+   the lock file still lists registry `cudarc` packages for the optional
+   chains below, so that command exits 0 with "nothing to print".
 3. The same two commands with `-p candle-nn-fathomdb` and
    `-p candle-transformers-fathomdb`.
 
-`candle-ug` is optional and off unless the `ug` feature is enabled; its
-`ug-cuda` → `cudarc 0.17.8` edge is outside CK-AC-01 (FathomDB records it
-as lock-only).
+Two optional chains are outside CK-AC-01, because neither feature is
+enabled by FathomDB: `candle-ug` (feature `ug`; `ug-cuda` → registry
+`cudarc 0.17.8`) and `flash-attn` (`candle-transformers-fathomdb/flash-attn`
+→ registry `candle-flash-attn 0.10.2` → registry `candle-core 0.10.2` →
+registry `cudarc`). Both appear in the lock file only.
 
 ### CK-REQ-02 Private-pool contexts [REQ31-02, REQ31-10]
 
@@ -89,8 +106,11 @@ current pools untouched.
 
 **CK-AC-02:** test `device_on_a_private_pool_context_allocates_from_that_pool`
 in the new integration-test binary `candle-core/tests/cuda_private_pool.rs`
-(§ 5.2), RED at `859b8ea1` (compile failure: registry cudarc 0.19.4 has no
-pool API) and GREEN at `K`, in K-G1 and K-G3 (k = 3 each) and in K-G2.
+(§ 5.2), RED at `859b8ea1` (compile failure: registry `cudarc ^0.19.4`,
+which resolves to 0.19.10 today, has no pool API) and GREEN at `K`, in
+K-G1 and K-G3 (k = 3 each) and in K-G2. R-FK-CODE runs a mutation check:
+with `Device::new_cuda(0)` in place of the pool-backed device, the test
+must fail at the `>= 16 MiB` assertion.
 
 ### CK-REQ-03 Delta minimal [REQ31-06]
 
@@ -107,10 +127,11 @@ unchanged (reviewer reads the diff).
 
 K4's linkage is unchanged by K7.
 
-**CK-AC-04:** on the K-G1 build at `K` (and the same at `859b8ea1` as the
-control), for the `candle-core` test binaries
-`cuda_private_pool-*`, `cuda_from_context-*` and the `candle_core-*` lib
-test binary:
+**CK-AC-04:** on the K-G1 and K-G3 builds at `K`, for the `candle-core`
+test binaries `cuda_private_pool-*`, `cuda_from_context-*` and the
+`candle_core-*` lib test binary, and on the `859b8ea1` control builds for
+`cuda_from_context-*` and the lib test binary (the control has no
+`cuda_private_pool`):
 
 1. `readelf -d <binary>` lists no `NEEDED` entry matching the forbidden
    pattern of FathomDB's `scripts/release/inspect-cuda-artifacts.py`
@@ -119,7 +140,9 @@ test binary:
    `libnvjitlink`, `libnvidia-ml`, `libnvml`);
 2. `nm -C --defined-only <binary> | grep -c ' cudaGetDeviceCount'` is at
    least 1 (static CUDART is linked in);
-3. the result equals the `859b8ea1` control.
+3. each control binary gives the same result as its `K` counterpart, and
+   `cuda_private_pool` at `K` gives the same result as `cuda_from_context`
+   at `K`.
 
 FathomDB's own artifact inspector runs on real wheels and NAPI tarballs at
 FathomDB W6; this criterion is the fork-side check.
@@ -165,6 +188,10 @@ Recorded; R-FK-PUB reviews them. (FK5; not part of FK2–FK3.)
    the class; cudarc R-FC-VERIFY F2).
 5. The `windchill3` guard lines are equal before and after every cell.
 
+Classes of the FK2 commits: the RED commit adding
+`candle-core/tests/cuda_private_pool.rs` is `L` (a fork-only test of the
+fork's dependency); the K7 commit is `P`.
+
 ## 4. Design decisions
 
 ### DK-1 Base: stay on 0.10.2 (owner, 2026-10-12)
@@ -178,7 +205,8 @@ Evidence:
   `upstream/main` (`c68b2499`, 2026-10-02) is 65 more. `0.11.0` requires
   `cudarc ^0.19.8`; only `main` requires `^0.19.10` (`e6838306`, #3998).
   Upstream publishes no release notes for these tags.
-- The CUDA backend from `0.10.2` to `0.11.0` changes 25 files, +10871/−76:
+- The CUDA backend from `0.10.2` to `0.11.0` changes 25 files, +10871/−76
+  (`git diff --shortstat 7c7a8c57 0.11.0 -- candle-core/src/cuda_backend candle-kernels candle-core/Cargo.toml Cargo.toml`):
   MMQ/MMVQ GGUF kernels compiled into `libmoe.a` (3 → 15 `.cu` files),
   a CUDA-graph host-to-device cache, a kernel parameter cache, and #3565,
   which makes `BackendDevice::new` use `per_thread_stream()`.
@@ -216,7 +244,10 @@ Evidence (Cargo 1.95.0, offline probes; Cargo reference,
   package. An 8-character `rev` on one side gives two packages and an
   ambiguous `cargo tree -i`.
 - A crates-io dependency on a name absent from the registry, supplied by
-  `[patch.crates-io]`, resolves offline. Online behaviour is not measured.
+  `[patch.crates-io]`, resolves, offline and online (R-FK-PLAN measured
+  `cudarc-fathomdb = "0.19.10"`, absent from crates.io, patched to a git
+  source: `cargo generate-lockfile` succeeds and the tree shows the git
+  node).
 - crates.io rejects git dependencies, so K8 switches to the registry
   version.
 
@@ -233,7 +264,8 @@ Decision: no SASS embedding. A FathomDB todo records it.
 Evidence:
 
 - `candle-kernels/build.rs` builds the 11 general kernel files as PTX only
-  (cudaforge 0.1.5, `nvcc --ptx`), embedded with `include_str!` and loaded
+  (cudaforge `nvcc --ptx`; 0.1.5 in FathomDB's lock, 0.1.6 in a fresh
+  fork lock), embedded with `include_str!` and loaded
   with `cuModuleLoadData`, so the driver JIT-compiles them. FathomDB's x86
   release builds `CUDA_COMPUTE_CAP=75` (9.2 MiB of PTX, `.target sm_75`),
   which the RTX 3090 runs by JIT. The MoE kernels in `libmoe.a` are
@@ -262,21 +294,40 @@ Evidence:
   does not carry upstream cudarc PR #595 (cudarc fork D-F3).
 
 Input to FathomDB D-14, memory outside the private pool: the cuBLAS
-workspace (from the current, default pool according to the #595
-description; the allocator is not verified), cuRAND generator state, the
-module load and JIT of the embedded PTX, and `libmoe.a`'s CUDART
-registration. FathomDB measures these as the change in the default pool's
-`USED_MEM_CURRENT` and `RESERVED_MEM_CURRENT`, plus `VmRSS` on Orin, never
-with `cuMemGetInfo`. Revisit when #595 lands.
+workspace, cuRAND generator state, the module load and JIT of the embedded
+PTX, and `libmoe.a`'s CUDART registration. Measured by R-FK-PLAN on RTX
+3090 with a pool-backed Candle device: the default pool's used and
+reserved counters stayed 0 through device construction, a 512×512 F32
+`matmul` and `Tensor::rand`, while the private pool held only tensor bytes
+(2 MiB after the `matmul`, 0 after drop). The cuBLAS workspace and cuRAND
+state therefore come from no memory pool. FathomDB measures memory outside
+the pool as the process's device memory (`nvidia-smi
+--query-compute-apps=pid,used_memory`, or a `cuMemGetInfo` change on a
+discrete GPU; `VmRSS` on Orin, where `cuMemGetInfo` is not a release
+signal), and keeps the default-pool counters as a leak check only.
+Revisit when #595 lands.
 
 ## 5. Tests and commands
 
 ### 5.1 Builds
 
-Every cell uses its own `CARGO_TARGET_DIR` per source tree (the commit under
-test and the `859b8ea1` control are separate trees), and records
-`sha256sum Cargo.lock` and `cargo tree -p candle-core-fathomdb --features cuda -e normal`,
-because the fork tracks no lock file.
+Every build uses its own `CARGO_TARGET_DIR` per source tree and
+`CUDA_COMPUTE_CAP` (the commit under test and the `859b8ea1` control are
+separate trees). The fork tracks no lock file, so:
+
+1. Build `K` first; its fresh `Cargo.lock` is the cell's lock.
+2. Copy that lock into the control tree before building it, so that Cargo
+   re-resolves only what differs (the `cudarc` source).
+3. The receipt records `sha256sum` of both locks, `diff` of the two locks,
+   and `cargo tree -p candle-core-fathomdb --features cuda -e normal` for
+   both.
+4. The receipt records which CUDA library files the T1 run opened
+   (`LD_DEBUG=files`, filtered to `libcuda`, `libcublas`, `libcublasLt`,
+   `libcurand` and `libnvrtc`), because cudarc item 9 (built-major
+   library loading) decides which files Candle opens.
+
+K4's `build.rs` finds the static CUDA runtime only through `CUDA_PATH`,
+so every cell sets it.
 
 ### 5.2 CK-AC-02 test design
 
@@ -312,21 +363,28 @@ process. It uses only `candle_core` public API and the re-exported
 
 ### 5.3 Cells
 
-Environment for K-G1: `CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=0
-CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=86`. K-G3 uses
-`CUDA_VISIBLE_DEVICES=0 CUDA_COMPUTE_CAP=87`; K-G2 uses
-`CUDARC_CUDA_VERSION=13000 CUDA_COMPUTE_CAP=75` (89 on L4) and
-`CUDA_PATH=/usr/local/cuda-13.0`.
+Environments (all cells also set `CUDA_DEVICE_ORDER=PCI_BUS_ID`):
+
+| Cell | Environment |
+| --- | --- |
+| K-G1 | `PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=86 CUDA_VISIBLE_DEVICES=0` |
+| K-G1 at 75 | the same with `CUDA_COMPUTE_CAP=75` (the FathomDB x86 release setting, `scripts/release/cuda-artifact-contract.sh:71` on `release/0.8.28`) |
+| K-G2 | `PATH=/usr/local/cuda-13.0/bin:$PATH CUDA_PATH=/usr/local/cuda-13.0 LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64 CUDARC_CUDA_VERSION=13000 CUDA_COMPUTE_CAP=75 CUDA_VISIBLE_DEVICES=0` (`CUDA_COMPUTE_CAP=89` on L4) |
+| K-G3 | `PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=87 CUDA_VISIBLE_DEVICES=0` (`/usr/local/cuda` is 12.6 on JetPack 6) |
 
 | Run | Command | At `K` | At `859b8ea1` |
 | --- | --- | --- | --- |
-| T1 | `cargo test -p candle-core-fathomdb --features cuda --test cuda_private_pool` | k = 3 (K-G1, K-G3), k = 1 (K-G2) | RED: compile failure, recorded |
-| T2 | `cargo test -p candle-core-fathomdb --features cuda --test cuda_from_context` | k = 1 | k = 1 |
+| T1 | `cargo test -p candle-core-fathomdb --features cuda --test cuda_private_pool` | k = 3 (K-G1, K-G3), k = 1 (K-G1 at 75, K-G2) | RED: compile failure, recorded (K-G1) |
+| T2 | `cargo test -p candle-core-fathomdb --features cuda --test cuda_from_context` | k = 1 (every cell, and K-G1 at 75) | k = 1 |
 | T3 | `cargo test -p candle-core-fathomdb --features cuda` (lib and every test binary) | k = 1 | k = 1 (control) |
 | T4 | `cargo test -p candle-nn-fathomdb --features cuda` | k = 1 | k = 1 (control) |
 | T5 | K-G3 only: `cargo test -p candle-core-fathomdb --test aarch64_linux_cpu` (no `cuda` feature) | k = 1 | k = 1 |
 | T6 | CK-AC-01 commands | at `K` | — |
-| T7 | CK-AC-04 checks, K-G1 only | at `K` | control |
+| T7 | CK-AC-04 checks, K-G1 and K-G3 | at `K` | control |
+| T8 | `cargo check -p candle-transformers-fathomdb --features cuda` (FathomDB uses its BERT models) | every cell | — |
+
+At 75 the BF16 tests are expected to fail (§ 2); K-G1 at 75 runs T1 and T2
+only.
 
 A T3 or T4 failure at `K` is accepted only when the same test fails the same
 way at `859b8ea1` on the same host; it is listed in the receipt. Any other
