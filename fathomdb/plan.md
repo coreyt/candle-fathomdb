@@ -9,7 +9,11 @@
   `release/0.8.28`).
 - Companion: the cudarc fork plan, `coreyt/cudarc` branch `fathomdb/0.19.10`,
   `fathomdb/plan.md`.
-- Status: plan revision 2 (2026-10-11), with FathomDB Slice 31 plan
+- Status: plan revision 3 (2026-10-12): FK1 facts corrected (upstream
+  commit counts and cudarc versions, § 2), K-G2 moved to a GCP VM (owner,
+  2026-10-12), DK-1 ruled (stay on 0.10.2); the finalized requirements,
+  decisions and tests are in `fathomdb/requirements.md`. Revision 2
+  (2026-10-11) was written with FathomDB Slice 31 plan
   revision 9. Revision 1 was reviewed by R0-rev8 (serving as R-FK-PLAN part
   1, APPROVE-WITH-FIXES; recorded in `fathomdb/review.md`). R-FK-PLAN
   proper reviews FK1.
@@ -70,7 +74,7 @@ Deleting any of them is an owner decision outside this plan.
 | Base: upstream tag `0.10.2` (`7c7a8c57`) + 10 fork commits, 10 files, +139/−41 | `git log 7c7a8c57..859b8ea1` |
 | Workspace depends on `cudarc = { version = "0.19.4", default-features = false, features = [std, cublas, cublaslt, curand, driver, nvrtc, f16, f8, cuda-version-from-build-system, dynamic-loading, …] }`; `candle-core` enables it through feature `cuda` | `Cargo.toml:43`; `candle-core/Cargo.toml:22,60` |
 | `candle-kernels` does not depend on cudarc (it builds PTX with `cudaforge`) and stays a git dependency of FathomDB, because static CUDART is required (FathomDB ADR-0.8.25 driverless CUDA runtime linkage, decision index row 52, REQ-068) | `candle-kernels/Cargo.toml`; FathomDB Slice 31 plan § 15 Q2 |
-| Upstream `main` is 0.11.0 on `cudarc = "0.19.10"` (`e6838306`, "Bump cudarc to 0.19.10 (#3998)", 2026-09-24), the same cudarc base as the cudarc fork; fork `main` (`6e823a43`) is 59 commits behind it | upstream `Cargo.toml:48`; `git rev-list --count 6e823a43..upstream/main` |
+| Upstream tag `0.11.0` (`31f35b14`, 67 commits after `0.10.2`) requires `cudarc ^0.19.8`; upstream `main` (`c68b2499` on 2026-10-12, 132 commits after `0.10.2`) requires `cudarc ^0.19.10` (`e6838306`, "Bump cudarc to 0.19.10 (#3998)", 2026-09-24), the cudarc fork's base (revision 2 said 0.11.0 was on 0.19.10 and 59 commits ahead; corrected in revision 3) | `git show 0.11.0:Cargo.toml`; upstream `main` `Cargo.toml:48`; `git rev-list --count` |
 | The fork tracks no `Cargo.lock` | tree at `859b8ea1` |
 | GitHub Actions enabled; upstream workflows (`rust-ci.yml`, `ci_cuda.yaml`, …) need a GPU runner for CUDA, which the fork does not have | `gh api …/actions/permissions`; `.github/workflows/` |
 | No item table or engineering record exists on the fork yet | tree at `859b8ea1` |
@@ -101,7 +105,7 @@ FathomDB REQ31 IDs are in brackets.
 | **CK-REQ-02 Private-pool contexts** [REQ31-02, REQ31-10]. A Candle device built with `Device::new_cuda_from_context` from a context created by `CudaContext::new_with_mem_pool` allocates from that private pool and leaves the device's default pool untouched. | **CK-AC-02:** a new test, failing first (RED) on `859b8ea1` because the API does not exist there, then passing: tensor allocation raises the pool's `used_cur`, drop + sync returns it to 0, and the default-pool handle is unchanged. Passes on RTX 3090 (12.6) and Orin (12.6). |
 | **CK-REQ-03 Delta minimal** [REQ31-06]. Only K7, the CK-AC-02 test and any build fix are added; no Candle API change beyond what K7 needs. | **CK-AC-03:** `git diff 859b8ea1..<K>` outside `fathomdb/` and `FATHOMDB.md` is limited to manifests, the CK-AC-02 test file and any build fix, each justified in `status.md`. |
 | **CK-REQ-04 Static CUDART held** [REQ-068]. K4 behaviour unchanged. | **CK-AC-04:** the shared-artifact check used by FathomDB's CUDA release contract passes against an FK3 build: no `libcudart.so` dependency, and static CUDART retained. The exact check is named in FK1. |
-| **CK-REQ-05 CUDA toolkits** [REQ31-03]. Builds and passes Candle CUDA tests with the 12.6 toolkit (RTX 3090, Orin), and with the 13.0 toolkit on RTX 3090 if the owner approves its download. 13.1+ runtime is UNMEASURED on driver 580 because Candle's kernels are PTX (Q4). | **CK-AC-05:** receipts K-G1, K-G2, K-G3 (§ 6). |
+| **CK-REQ-05 CUDA toolkits** [REQ31-03]. Builds and passes Candle CUDA tests with the 12.6 toolkit (RTX 3090, Orin), and with the 13.0 toolkit on a driver-580 GCP T4 (or L4) VM (owner, 2026-10-12). 13.1+ runtime is UNMEASURED on driver 580 because Candle's kernels are PTX (Q4). | **CK-AC-05:** receipts K-G1, K-G2, K-G3 (§ 6). |
 | **CK-REQ-06 Items documented** [REQ31-06]. | **CK-AC-06:** `FATHOMDB.md` lists K1–K8 with upstream status and removal path. |
 | **CK-REQ-07 Publication** [REQ31-08]. Version 0.10.4 depends on registry `cudarc-fathomdb` 0.19.10, published from `C`. K8 is a new code commit, so it is re-qualified before publication. | **CK-AC-07:** at the K8 commit `K8`: K-G1 and K-G3 pass against registry `cudarc-fathomdb` 0.19.10, CK-AC-01 and CK-AC-04 hold, and `cargo publish --dry-run` for each of the three crates passes in dependency order. Recorded; R-FK-PUB reviews them. |
 | **CK-REQ-08 Process and safety** [REQ31-11, REQ31-12]. | **CK-AC-08:** `status.md` red and green shas, each red re-run by the reviewer; `review.md` lists each review with model `opus`; no upstream PR or push; guard logs unchanged. |
@@ -142,7 +146,7 @@ it carries the pool.
 | # | Host | Toolkit / build | Needs | Tests |
 | --- | --- | --- | --- | --- |
 | K-G1 | `windchill3` RTX 3090, driver 580 | 12.6, `CUDARC_CUDA_VERSION=12060` | present | `cargo test -p candle-core-fathomdb --features cuda` (incl. `cuda_from_context`, CK-AC-02), `-p candle-nn-fathomdb --features cuda`; CK-AC-04 check |
-| K-G2 | same | user-local 13.0, `CUDA_PATH=$HOME/opt/cuda-13.0`, `CUDARC_CUDA_VERSION=13000` | owner-approved download | same tests; UNMEASURED by owner decision if declined |
+| K-G2 | GCP Spot T4, then on-demand T4, then L4; driver branch 580 on the VM | CUDA 13.0 toolkit on the VM, `CUDARC_CUDA_VERSION=13000` | owner-approved session (2026-10-12), at most 2 h; Spot is test-only, never development | same tests (requirements § 5.3) |
 | K-G3 | Orin, JetPack 6 | 12.6, `CUDA_COMPUTE_CAP=87`, `CUDARC_CUDA_VERSION=12060` | present | same tests; `aarch64_linux_cpu` |
 | K-G4 | RTX 3090 | 13.1–13.4 | R615 driver (never — Q4) | UNMEASURED |
 | K-G5 | Orin, JetPack 7.2.x | 13.2/13.4 | reflash (Q5) | UNMEASURED |
@@ -157,9 +161,9 @@ does. Receipts are linked from FathomDB by permalink at their commit sha.
 
 | Change | Re-run |
 | --- | --- |
-| cudarc pin `<C>` moves (any cudarc code change) | K-G1, K-G3, K-G2 if 13.0 is installed; CK-AC-01 |
+| cudarc pin `<C>` moves (any cudarc code change) | K-G1, K-G3, K-G2; CK-AC-01 |
 | `candle-kernels/build.rs` | all cells; CK-AC-04 |
-| `candle-core` source or tests (including the CK-AC-02 test) | K-G1, K-G3, K-G2 if 13.0 is installed |
+| `candle-core` source or tests (including the CK-AC-02 test) | K-G1, K-G3, K-G2 |
 | manifests (dependency form, versions) | CK-AC-01, CK-AC-04, K-G1 |
 | K8 (registry dependency, 0.10.4) | CK-AC-07: K-G1, K-G3, CK-AC-01, CK-AC-04 against the registry crate |
 | `fathomdb/` or `FATHOMDB.md` only | nothing |
@@ -186,7 +190,7 @@ independent Opus subagents, as in the cudarc fork plan § 9, recorded in
 - the qualified Candle code commit `<K>`, and the cudarc commit `<C>` it
   pins;
 - R-FK-CODE and R-FK-VERIFY with no open finding;
-- receipts K-G1 and K-G3, plus K-G2 or its owner-decision UNMEASURED;
+- receipts K-G1, K-G2 and K-G3;
 - after publication, the three 0.10.4 crates built from the re-qualified
   `K8` (FathomDB's W8 registry pins name these; CK-AC-07 covers them).
 
@@ -194,6 +198,6 @@ independent Opus subagents, as in the cudarc fork plan § 9, recorded in
 
 - **Two cudarc nodes** if any Candle crate keeps a registry `cudarc` edge
   (CK-AC-01).
-- **Upstream drift** (0.11.0 on cudarc 0.19.10, 59 commits): DK-1.
+- **Upstream drift** (0.11.0 on cudarc 0.19.8, 67 commits; `main` on 0.19.10, 132 commits): DK-1, ruled stay on 0.10.2.
 - **Static CUDART regression** from a manifest change (CK-AC-04).
 - **Accidental upstream PR or push** (§ 1).
