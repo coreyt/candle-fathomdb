@@ -40,7 +40,7 @@ candle-transformers = { path = "./candle-transformers", package = "candle-transf
 candle-ug = "0.10.2"
 clap = { version = "4.2.4", features = ["derive"] }
 criterion = { version = "0.8", default-features = false }
-cudarc = { version = "0.19.4", features = [
+cudarc = { package = "cudarc-fathomdb", git = "https://github.com/coreyt/cudarc.git", rev = "b777f8d94eedca8334e9331cf520d554b22544b7", features = [
     "std",
     "cublas",
     "cublaslt",
