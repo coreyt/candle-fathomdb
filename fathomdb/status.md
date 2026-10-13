@@ -97,6 +97,7 @@ Newest entries last. Shas are verified from git.
 | Step | Commit | Class | Evidence |
 | --- | --- | --- | --- |
 | K8 | `cd64715e` | `P` | no RED: packaging and manifests only (root `Cargo.toml` lines 31, 37, 39, 43; `version` in the three crate manifests); re-qualified by CK-AC-07 |
+| K9 | `182ceab0` | `P` | no RED: manifests only (root `Cargo.toml` lines 31, 37, 39; `version` and `description` in the three crate manifests); supersedes K8 for publication |
 
 - `K8` = `cd64715ead4f86470b195a9010c4f60f7a4c0833`. Registry
   `cudarc-fathomdb` 0.19.10 is published from `C` =
@@ -159,3 +160,55 @@ Newest entries last. Shas are verified from git.
 - `FATHOMDB.md` usage example now names 0.10.4.
 - **Next:** R-FK-PUB (Opus), then the owner-approved publish of the three
   crates in dependency order (FathomDB steward ledger seq-320).
+
+## K9 (class P): 0.11.0 (2026-10-13)
+
+- Why: R-FK-PUB (Opus) of `K8` finding 1 (Medium): `candle-core` re-exports
+  cudarc (`candle-core/src/cuda_backend/mod.rs:7`, `pub use cudarc;`), and
+  0.10.3 → 0.10.4 replaced that dependency (upstream `cudarc` 0.19.4) with a
+  different crate, `cudarc-fathomdb`, which Cargo semver treats as breaking.
+  Owner ruling 2026-10-13: renumber to 0.11.0. Finding 3 (Low) folded in:
+  the three crates now set their own `description` instead of upstream's
+  "Minimalist ML framework.".
+- `K9` = `182ceab0547348993b6dbec4b1aed610dcc8b23f`. Manifests only: the
+  three crate versions and the root `candle`, `candle-nn`,
+  `candle-transformers` entries go to 0.11.0; each crate's `description` is
+  "FathomDB fork of Candle's <core|nn|transformers> crate, built on
+  cudarc-fathomdb; not the upstream crate. See FATHOMDB.md in the
+  repository." The cudarc dependency (`cudarc-fathomdb` 0.19.10) and
+  `candle-kernels` (path + 0.10.2) are unchanged; no source change.
+- Local checks at `K9`, `windchill3`, Cargo 1.95.0, separate
+  `CARGO_TARGET_DIR`, no GPU used:
+  - `cargo generate-lockfile`: exit 0. `sha256sum Cargo.lock` =
+    `131ca2284050f37a5f1dcfcb8f8a35a896c0f408d569c53aeecc53a0c90e4ec3`.
+    Against the K8 lock (`085e38af…`): only the three fork packages'
+    `version` lines differ (0.10.4 → 0.11.0).
+  - CK-AC-01 for each of the three crates (`cargo tree -p <crate> --features
+    cuda -e normal --prefix none`): exactly one `cudarc-fathomdb v0.19.10`,
+    no `cudarc v` line.
+  - `CUDA_PATH=/usr/local/cuda CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=86 cargo check -p candle-core-fathomdb --features cuda`:
+    exit 0.
+  - `cargo publish --dry-run -p candle-core-fathomdb -p candle-nn-fathomdb -p candle-transformers-fathomdb`
+    from a clean detached worktree of `K9`: exit 0; packaged, verified and
+    aborted upload.
+
+    | Crate | Files | `.crate` SHA-256 |
+    | --- | --- | --- |
+    | `candle-core-fathomdb-0.11.0` | 108 | `b5feacc063f44c77a54cb8b43d03c5e32fa5421f4163f0524194783e21563341` |
+    | `candle-nn-fathomdb-0.11.0` | 46 | `69c7432aa63cb543065f49453fa2e258e4dc3bd458abbcb7c150d17e90026200` |
+    | `candle-transformers-fathomdb-0.11.0` | 210 | `513008c79a9751ec5fdc08918dcdb1a8872c95e90f7697a9f8c5ef1951e3d222` |
+
+  - Packaged manifests: the fork `description` above; `candle-core-fathomdb`
+    `[dependencies.cudarc]` `version = "0.19.10"`,
+    `package = "cudarc-fathomdb"`, no `git`; `[dependencies.candle-kernels]`
+    `version = "0.10.2"`. `candle-nn-fathomdb` and
+    `candle-transformers-fathomdb` depend on the fork crates at 0.11.0.
+    `.cargo_vcs_info.json` names `K9`.
+  - CK-AC-08 item 4 over `859b8ea1..HEAD`: one class per commit; `D`
+    commits touch only `fathomdb/` and `FATHOMDB.md`; `K9` touches only the
+    four manifests.
+- K8 is superseded for publication; its CK-AC-07 receipt stands as evidence
+  for the same code.
+- `FATHOMDB.md`: K9 row, K8 marked superseded, usage example 0.11.0, K7 row
+  reworded for the registry dependency (R-FK-PUB finding 4), `flash-attn`
+  note (finding 5).

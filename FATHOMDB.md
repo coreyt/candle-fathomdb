@@ -20,7 +20,7 @@ The packages are renamed; the library names are still `candle_core`,
 
 ```toml
 [dependencies]
-candle-core = { package = "candle-core-fathomdb", version = "0.10.4" }
+candle-core = { package = "candle-core-fathomdb", version = "0.11.0" }
 ```
 
 `candle-kernels` is **not** renamed or published by the fork. The registry
@@ -28,6 +28,10 @@ crates depend on upstream `candle-kernels` 0.10.2, which links
 `libcudart.so` dynamically. Items K4 and K6 reach a build only when the
 workspace patches `candle-kernels` to this fork's git source, as FathomDB
 does.
+
+`candle-transformers-fathomdb`'s `flash-attn` feature is unsupported: it
+pulls upstream `candle-flash-attn`, which depends on upstream `candle-core`
+0.10.2, so a build would hold two different `candle-core` crates.
 
 ## Items
 
@@ -43,9 +47,10 @@ Class: `U` upstream-shaped code, proposable upstream; `L` local-only code;
 | K4 | `20ca927b`, `cf02edbc`, `1aefdd00` | `candle-kernels/build.rs` links `cudart_static` (whole archive, plus `dl`, `rt`, `pthread`) instead of `libcudart.so`, and searches `$CUDA_PATH/targets/{x86_64,aarch64}-linux/lib`; `candle-kernels` is taken from the workspace path | `L` | not upstream: `candle-kernels/build.rs:70` (`0.11.0`) and `:78` (`main`) link `dylib=cudart`; issue #3900 open; PRs #3891 and #3916 open | drop when an upstream release's default CUDA build does not link `libcudart.so` |
 | K5 | `73e267d0`, `5b74532e` | Public `CudaDevice::from_context` (on the context's default stream) and `Device::new_cuda_from_context`, with tests: a caller-made context, such as one on a private memory pool, backs a Candle device | `U` | no public equivalent: upstream has a private `from_context_and_stream` (`cuda_backend/device.rs:393` on `0.11.0`, #3565); open PR #3777 would make it public (issue #1751). Upstream `BackendDevice::new` now uses `per_thread_stream()` | drop when an upstream release has a public constructor from an existing context |
 | K6 | `859b8ea1` | Kernel build script reruns when `CUDA_PATH` changes | `U` | not upstream; no PR or issue | drop with K4 |
-| K7 | `0d6fa138` | Depends on `cudarc-fathomdb` (FathomDB's cudarc fork, which adds a private memory pool) at a qualified commit, as `cudarc = { package = "cudarc-fathomdb", git, rev }`; the crate name stays `cudarc` and the features are unchanged | `P` | not applicable: upstream uses registry `cudarc` (0.19.8 on `0.11.0`, 0.19.10 on `main`) | drop when upstream cudarc ships an equivalent private-pool API in a release Candle uses, or FathomDB no longer needs private pools |
+| K7 | `0d6fa138` | Depends on `cudarc-fathomdb` (FathomDB's cudarc fork, which adds a private memory pool) as `cudarc = { package = "cudarc-fathomdb", ... }`; the crate name stays `cudarc` and the features are unchanged. `0d6fa138` pinned a git commit; since K8 it is registry `cudarc-fathomdb` 0.19.10 | `P` | not applicable: upstream uses registry `cudarc` (0.19.8 on `0.11.0`, 0.19.10 on `main`) | drop when upstream cudarc ships an equivalent private-pool API in a release Candle uses, or FathomDB no longer needs private pools |
 | K7t | `d4ffdf58`, `853324fc` | Test `candle-core/tests/cuda_private_pool.rs`: a device built on a private-pool context allocates from that pool and leaves the default pool untouched | `L` | not applicable: tests K7's dependency | drop with K7 |
-| K8 | `cd64715e` | 0.10.4 versions, depending on registry `cudarc-fathomdb` 0.19.10 | `P` | not applicable | drop with K7 and K1 |
+| K8 | `cd64715e` | 0.10.4 versions, depending on registry `cudarc-fathomdb` 0.19.10; superseded for publication by K9 | `P` | not applicable | drop with K7 and K1 |
+| K9 | `182ceab0` | 0.11.0 versions (the public `cudarc` re-export changed crate, a semver break); fork `description` on the three crates | `P` | not applicable | drop with K7 and K1 |
 
 ## Notes
 
