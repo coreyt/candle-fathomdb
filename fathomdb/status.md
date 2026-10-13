@@ -91,3 +91,56 @@ Newest entries last. Shas are verified from git.
   every test-result, summary, lock, CK-AC-01, CK-AC-04 and loaded-library
   line of the raw cell output.
 - Remaining here: FK5, after the owner publishes `cudarc-fathomdb`.
+
+## FK5 K8 (class P) (2026-10-13)
+
+| Step | Commit | Class | Evidence |
+| --- | --- | --- | --- |
+| K8 | `cd64715e` | `P` | no RED: packaging and manifests only (root `Cargo.toml` lines 31, 37, 39, 43; `version` in the three crate manifests); re-qualified by CK-AC-07 |
+
+- `K8` = `cd64715ead4f86470b195a9010c4f60f7a4c0833`. Registry
+  `cudarc-fathomdb` 0.19.10 is published from `C` =
+  `b777f8d94eedca8334e9331cf520d554b22544b7`. The cudarc feature list and
+  `default-features = false` are unchanged; `candle-kernels` stays path +
+  `0.10.2` (not published by the fork; FathomDB patches it by git, Q2).
+- Local checks at `K8`, `windchill3`, Cargo 1.95.0, separate
+  `CARGO_TARGET_DIR`, no GPU used:
+  - `cargo generate-lockfile`: exit 0. `Cargo.lock` is untracked and
+    gitignored (`.gitignore:10`); `git status` clean.
+    `sha256sum Cargo.lock` =
+    `085e38af2fbfde7c617a57bd57e04a1c86fe1f125fcdfef693d5982beca96c3f`.
+  - Lock: `cudarc-fathomdb` 0.19.10,
+    `source = "registry+https://github.com/rust-lang/crates.io-index"`,
+    checksum `8780d2fe…caf2`. Two registry `cudarc` entries, on the
+    optional chains named under CK-AC-01 only: `cudarc 0.17.8` (`ug-cuda`
+    0.5.0 → `candle-ug`) and `cudarc 0.19.10` (registry `candle-core`
+    0.10.2 → `candle-flash-attn` 0.10.2).
+  - CK-AC-01 analog, for each of `candle-core-fathomdb`,
+    `candle-nn-fathomdb`, `candle-transformers-fathomdb`:
+    `cargo tree -p <crate> --features cuda -e normal --prefix none | grep -E '^cudarc(-fathomdb)? v' | sort -u`
+    prints exactly `cudarc-fathomdb v0.19.10` (no git source); no
+    `cudarc v` line.
+  - `CUDA_PATH=/usr/local/cuda CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=86 cargo check -p candle-core-fathomdb --features cuda`:
+    exit 0 (`candle-kernels` built 11 PTX and 3 kernels).
+  - `cargo publish --dry-run -p candle-core-fathomdb -p candle-nn-fathomdb -p candle-transformers-fathomdb`:
+    exit 0; packaged, verified (CPU default) and aborted upload in that
+    order. Later crates resolved the unpublished 0.10.4 of earlier ones.
+
+    | Crate | Files | `.crate` SHA-256 |
+    | --- | --- | --- |
+    | `candle-core-fathomdb-0.10.4` | 108 | `d2daf84a7e6b0c9145c8132cd2313fd6e270cd3f62a2d8749190627a4f3151be` |
+    | `candle-nn-fathomdb-0.10.4` | 46 | `cf38982ebafc5d93bb6d34906f52f6a62cf636d6875635e5bffdb6e9b253c5bd` |
+    | `candle-transformers-fathomdb-0.10.4` | 210 | `5fe23dbe5493347b2a1662e954271f6737456280c388f2ab14a0d8f4a8eb6261` |
+
+  - Packaged `candle-core-fathomdb` `Cargo.toml`: `[dependencies.cudarc]`
+    `version = "0.19.10"`, `package = "cudarc-fathomdb"`, optional,
+    `default-features = false`, same features, no `git`;
+    `[dependencies.candle-kernels]` `version = "0.10.2"` (registry),
+    optional. `.cargo_vcs_info.json` names `K8`. `candle-nn-fathomdb` and
+    `candle-transformers-fathomdb` depend on `candle-core-fathomdb` and
+    `candle-nn-fathomdb` `0.10.4`.
+  - CK-AC-08 item 4 over `859b8ea1..HEAD`: one class per commit; `D`
+    commits touch only `fathomdb/` and `FATHOMDB.md`; `K8` touches only the
+    four manifests.
+- Open for CK-AC-07: K-G1 and K-G3 against registry `cudarc-fathomdb`
+  0.19.10 and CK-AC-04 at `K8` (GPU cells, not run here); then R-FK-PUB.

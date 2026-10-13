@@ -45,7 +45,7 @@ Class: `U` upstream-shaped code, proposable upstream; `L` local-only code;
 | K6 | `859b8ea1` | Kernel build script reruns when `CUDA_PATH` changes | `U` | not upstream; no PR or issue | drop with K4 |
 | K7 | `0d6fa138` | Depends on `cudarc-fathomdb` (FathomDB's cudarc fork, which adds a private memory pool) at a qualified commit, as `cudarc = { package = "cudarc-fathomdb", git, rev }`; the crate name stays `cudarc` and the features are unchanged | `P` | not applicable: upstream uses registry `cudarc` (0.19.8 on `0.11.0`, 0.19.10 on `main`) | drop when upstream cudarc ships an equivalent private-pool API in a release Candle uses, or FathomDB no longer needs private pools |
 | K7t | `d4ffdf58`, `853324fc` | Test `candle-core/tests/cuda_private_pool.rs`: a device built on a private-pool context allocates from that pool and leaves the default pool untouched | `L` | not applicable: tests K7's dependency | drop with K7 |
-| K8 | FK5 | 0.10.4 versions, depending on registry `cudarc-fathomdb` 0.19.10 | `P` | not applicable | drop with K7 and K1 |
+| K8 | `cd64715e` | 0.10.4 versions, depending on registry `cudarc-fathomdb` 0.19.10 | `P` | not applicable | drop with K7 and K1 |
 
 ## Notes
 
