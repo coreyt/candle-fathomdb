@@ -41,7 +41,7 @@ Every review is an independent Opus subagent, read-only (plan § 8).
 | M3 | K-G1 did not test the x86 release setting `CUDA_COMPUTE_CAP=75` | "K-G1 at 75" runs T1 and T2 |
 | M4 | K-G2 silent on the known sm_75 `ones_gpu` failure, the control's session, and the driver version | § 2: `ones_gpu` expected on sm_75 (equal at control), control in the same VM session, driver and `nvcc` recorded |
 | M5 | DK-4's default-pool measurement reads 0: cuBLAS workspace and cuRAND state use no pool (measured) | DK-4 records the measurement; D-14 input is per-process device memory (VmRSS on Orin), default-pool counters as a leak check only |
-| M6 | FathomDB Slice 31 plan revision 13 still assumes a `windchill3` 13.0 download and says 0.11.0 is on cudarc 0.19.10 | FathomDB's: open for plan revision 14 (recorded in `status.md`) |
+| M6 | FathomDB Slice 31 plan revision 13 still assumes a `windchill3` 13.0 download and says 0.11.0 is on cudarc 0.19.10 | FathomDB's: fixed in Slice 31 plan revision 14 (`fathomadb/fathomdb` `80ae2a18e`, 2026-10-13): AC31-03b cites K-G2 on GCP, T-WS-BUILD 13000 runs on a GCP VM with driver branch 580 (ruling Q15), § 2 and § 14 corrected |
 | L1 | classes of the FK2 commits unstated | RED test `L`, K7 `P`; `FATHOMDB.md` row K7t |
 | L2 | `flash-attn` chain to registry `cudarc` not listed | listed out of scope with `candle-ug` |
 | L3 | DK-1 diff stat not reproducible | command given |

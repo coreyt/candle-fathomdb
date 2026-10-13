@@ -76,3 +76,18 @@ Newest entries last. Shas are verified from git.
   DK-4 measurement method for D-14.
 - Remaining here: FK5 (K8, 0.10.4 on registry `cudarc-fathomdb` 0.19.10),
   after the owner publishes `cudarc-fathomdb`.
+
+## Carried to FathomDB (2026-10-13)
+
+- R-FK-PLAN M6: fixed in Slice 31 plan revision 14 (`80ae2a18e` on
+  `release/0.8.28`); no Candle-side item is open.
+- F2 (no BF16/F8 in the cc 75 x86 build): FathomDB plan D-11 and todos
+  ledger caveat `TC-30847709`. F5 (`libcuda.so.1`-only smoke): a T-CUDA
+  row in plan § 7, run in W6. DK-1 rebase: todo `TC-509dc8a6`; DK-3
+  multi-architecture kernels: `TC-323f15b0`; DK-4 measurement method:
+  plan D-14 and `TC-283d4f3a`.
+- The Orin cell directory `~/fathomdb-forks/candle-cells` was deleted
+  after checking that `qualification/2026-10-12-K-G3-853324fc.log` holds
+  every test-result, summary, lock, CK-AC-01, CK-AC-04 and loaded-library
+  line of the raw cell output.
+- Remaining here: FK5, after the owner publishes `cudarc-fathomdb`.
