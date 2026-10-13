@@ -1,6 +1,6 @@
 [package]
 name = "candle-transformers-fathomdb"
-version = "0.10.3"
+version = "0.10.4"
 edition.workspace = true
 description.workspace = true
 repository.workspace = true
