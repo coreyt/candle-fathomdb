@@ -8,22 +8,21 @@ use candle_core::cuda::cudarc::driver::{
 };
 use candle_core::{DType, Device, Tensor};
 use std::sync::Arc;
+use sys::CUmemPool_attribute::{CU_MEMPOOL_ATTR_USED_MEM_CURRENT, CU_MEMPOOL_ATTR_USED_MEM_HIGH};
 
 const MIB: u64 = 1024 * 1024;
 
-fn default_pool_used_current(pool: sys::CUmemoryPool) -> candle_core::Result<u64> {
-    let mut used: u64 = 0;
-    // SAFETY: `pool` is the device's default pool, which lives as long as the
-    // primary context, and USED_MEM_CURRENT writes one u64 to `used`.
-    unsafe {
-        result::mem_pool::get_attribute(
-            pool,
-            sys::CUmemPool_attribute::CU_MEMPOOL_ATTR_USED_MEM_CURRENT,
-            (&mut used as *mut u64).cast(),
-        )
-    }
-    .map_err(candle_core::Error::wrap)?;
-    Ok(used)
+fn default_pool_attribute(
+    pool: sys::CUmemoryPool,
+    attr: sys::CUmemPool_attribute,
+) -> candle_core::Result<u64> {
+    let mut value: u64 = 0;
+    // SAFETY: `pool` is the device's default pool, which the driver owns for
+    // the life of the process, and each attribute read here writes one u64 to
+    // `value`.
+    unsafe { result::mem_pool::get_attribute(pool, attr, (&mut value as *mut u64).cast()) }
+        .map_err(candle_core::Error::wrap)?;
+    Ok(value)
 }
 
 #[test]
@@ -57,7 +56,10 @@ fn device_on_a_private_pool_context_allocates_from_that_pool() -> candle_core::R
     ));
 
     assert_eq!(pool.used_current().map_err(w)?, 0);
-    let default_used_before = default_pool_used_current(default_before)?;
+    let default_used_before =
+        default_pool_attribute(default_before, CU_MEMPOOL_ATTR_USED_MEM_CURRENT)?;
+    let default_high_before =
+        default_pool_attribute(default_before, CU_MEMPOOL_ATTR_USED_MEM_HIGH)?;
 
     let elements = (8 * MIB / 4) as usize;
     let t = Tensor::zeros(elements, DType::F32, &device)?;
@@ -66,6 +68,10 @@ fn device_on_a_private_pool_context_allocates_from_that_pool() -> candle_core::R
     let used = pool.used_current().map_err(w)?;
     assert!(used >= 16 * MIB, "private pool used {used} bytes");
     assert!(pool.reserved_current().map_err(w)? >= used);
+    assert_eq!(
+        default_pool_attribute(default_before, CU_MEMPOOL_ATTR_USED_MEM_CURRENT)?,
+        default_used_before
+    );
 
     drop(u);
     drop(t);
@@ -79,8 +85,12 @@ fn device_on_a_private_pool_context_allocates_from_that_pool() -> candle_core::R
     assert_eq!(default_after, default_before);
     assert_eq!(current_after, current_before);
     assert_eq!(
-        default_pool_used_current(default_before)?,
+        default_pool_attribute(default_before, CU_MEMPOOL_ATTR_USED_MEM_CURRENT)?,
         default_used_before
+    );
+    assert_eq!(
+        default_pool_attribute(default_before, CU_MEMPOOL_ATTR_USED_MEM_HIGH)?,
+        default_high_before
     );
     Ok(())
 }
