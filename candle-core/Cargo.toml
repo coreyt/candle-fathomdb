@@ -1,8 +1,8 @@
 [package]
 name = "candle-core-fathomdb"
-version = "0.10.4"
+version = "0.11.0"
 edition.workspace = true
-description.workspace = true
+description = "FathomDB fork of Candle's core crate, built on cudarc-fathomdb; not the upstream crate. See FATHOMDB.md in the repository."
 repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
