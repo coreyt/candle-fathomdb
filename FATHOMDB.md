@@ -20,7 +20,7 @@ The packages are renamed; the library names are still `candle_core`,
 
 ```toml
 [dependencies]
-candle-core = { package = "candle-core-fathomdb", version = "0.10.3" }
+candle-core = { package = "candle-core-fathomdb", version = "0.10.4" }
 ```
 
 `candle-kernels` is **not** renamed or published by the fork. The registry

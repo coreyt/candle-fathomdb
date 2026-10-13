@@ -144,3 +144,18 @@ Newest entries last. Shas are verified from git.
     four manifests.
 - Open for CK-AC-07: K-G1 and K-G3 against registry `cudarc-fathomdb`
   0.19.10 and CK-AC-04 at `K8` (GPU cells, not run here); then R-FK-PUB.
+
+### CK-AC-07 GPU cells at `K8` (2026-10-13)
+
+- K-G1 (RTX 3090, 12.6) and K-G3 (Orin, 12.6) at
+  `cd64715ead4f86470b195a9010c4f60f7a4c0833`, control `K = 853324fc`: every
+  run equals the control and the 2026-10-12 counts (T3 297 and 298 passed,
+  T4 50/0/2, T1 1/0/0 ×3, T5 on the Orin 1/0/0). CK-AC-01: one registry
+  `cudarc-fathomdb v0.19.10` node per crate. CK-AC-04: 0 forbidden
+  `NEEDED`, static CUDART present. K8 lock `085e38af…` on both hosts.
+  Receipt `qualification/2026-10-13-CK-AC-07-cd64715e.md`.
+- `windchill3` guard equal before and after (580.178.04; `/usr/local/cuda`
+  → 12.6).
+- `FATHOMDB.md` usage example now names 0.10.4.
+- **Next:** R-FK-PUB (Opus), then the owner-approved publish of the three
+  crates in dependency order (FathomDB steward ledger seq-320).
