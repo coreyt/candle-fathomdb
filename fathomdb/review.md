@@ -67,3 +67,17 @@ Every review is an independent Opus subagent, read-only (plan § 8).
 | L2 | SAFETY comment tied the default pool to the primary context | fixed at `853324fc` |
 | L3 | explicit `result::init()` redundant | kept: harmless, and the handles are read before any context exists |
 | L4 | `cargo fmt` differs in fork code (`device.rs:721`, K5; `aarch64_linux_cpu.rs:7`, K2); clippy `collapsible_match` at `npy.rs:121` (upstream) | not changed: CK-REQ-03 limits this line's delta to K7, its test and build fixes, and both diffs are formatting only in code published as 0.10.3; recorded for the next fork line |
+
+## R-FK-CODE re-check (`853324fc`), 2026-10-12
+
+- Model: `opus` (Claude Opus), general-purpose, read-only; six scratch
+  trees, each with its own target directory, on RTX 3090 index 0.
+- Verdict: APPROVE. Mutations: a transient default-pool allocation passes
+  the old test and fails the new one at `USED_MEM_HIGH`; a held one fails
+  at the live `USED_MEM_CURRENT` check; the plain-device mutation fails at
+  `>= 16 MiB`; GREEN 3/3. The `USED_MEM_HIGH` assertion is judged sound on
+  discrete and Tegra (per-process pools; baseline read after
+  construction). Class check over `859b8ea1..4ee4fcea` passes; L1–L4
+  dispositions judged fair.
+- N1 (wording of § 5.2 step 5 and CK-AC-02): fixed in the commit recording
+  this review.

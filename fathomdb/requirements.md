@@ -111,9 +111,10 @@ which resolves to 0.19.10 today, has no pool API) and GREEN at `K`, in
 K-G1 and K-G3 (k = 3 each) and in K-G2. R-FK-CODE runs mutation checks:
 with `Device::new_cuda(0)` in place of the pool-backed device the test must
 fail (at the stream-context assertion, or at `>= 16 MiB` when that assertion
-is removed); with a transient 8 MiB default-pool allocation while the
+is removed); with an 8 MiB default-pool allocation made and freed while the
 private-pool tensors are live, it must fail at the default pool's
-`USED_MEM_HIGH` assertion.
+`USED_MEM_HIGH` assertion, and with one still held there, at the live
+`USED_MEM_CURRENT` check.
 
 ### CK-REQ-03 Delta minimal [REQ31-06]
 
@@ -353,7 +354,7 @@ process. It uses only `candle_core` public API and the re-exported
    `Arc::ptr_eq(ctx.mem_pool().unwrap(), &pool)`, and that the device's
    stream belongs to `ctx`.
 5. Baseline after construction: assert `pool.used_current() == 0`; record
-   the default pool's `USED_MEM_CURRENT`.
+   the default pool's `USED_MEM_CURRENT` and `USED_MEM_HIGH`.
 6. Allocate an 8 MiB `F32` tensor and one element-wise result, then
    `device.synchronize()`. Assert `pool.used_current() >= 16 MiB` and
    `pool.reserved_current() >= pool.used_current()`. No `matmul` (cuBLAS
