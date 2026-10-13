@@ -47,4 +47,17 @@ Newest entries last. Shas are verified from git.
   and re-run after touching the source. Cells use one target directory
   per tree (`scripts/run-cell.sh`).
 - Code commit to qualify: `K` = `853324fc2b9f813eedceb75bef660a06a413ff5b`.
-- Next: R-FK-CODE re-check of `853324fc`; FK3 cells.
+- R-FK-CODE re-check: APPROVE (`review.md`).
+
+## FK3 (2026-10-12/13)
+
+| Cell | Host | Result at `K` = `853324fc` | Receipt |
+| --- | --- | --- | --- |
+| K-G1 | `windchill3` RTX 3090, 580.178.04, 12.6, cc 86 | pass; T3 297/0/0 (control 296/0/0) | `qualification/2026-10-12-K-G1-K-G3-853324fc.md` |
+| K-G1 at 75 | same, cc 75 | pass (T1, T2) | same |
+| K-G3 | Orin, JetPack 6, 12.6, cc 87 | pass; T3 298/0/0 (control 297/0/0) | same |
+| K-G2 | GCP Spot T4, 580.178.04, CUDA 13.0 toolkit, cc 75 | pass; T3 296/1/0, the one failure `ones_gpu` (sm_75, expected), equal at control | `qualification/2026-10-12-K-G2-853324fc.md` |
+
+- GCP session: VM `fdb-lab-kg2-1` created 00:06:20Z, deleted 00:25:14Z;
+  no lab VM remains.
+- Next: R-FK-VERIFY (Opus).

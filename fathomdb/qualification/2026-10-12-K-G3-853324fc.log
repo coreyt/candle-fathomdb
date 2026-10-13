@@ -1,0 +1,236 @@
+##### host.txt
+== start 2026-10-13T00:01:58Z
+host: ubuntu Linux 5.15.199-tegra aarch64
+0, Orin (nvgpu), [N/A], 540.5.0, 8.7
+# R36 (release), REVISION: 5.2, GCID: 46426093, BOARD: generic, EABI: aarch64, DATE: Thu Jul 16 18:56:22 UTC 2026
+readlink -f /usr/local/cuda: /usr/local/cuda-12.6
+nvcc: Build cuda_12.6.r12.6/compiler.34714021_0
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+CUDA_COMPUTE_CAP=87
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda
+CUDARC_CUDA_VERSION=12060
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda/lib64
+== end 2026-10-13T00:11:57Z
+host: ubuntu Linux 5.15.199-tegra aarch64
+0, Orin (nvgpu), [N/A], 540.5.0, 8.7
+# R36 (release), REVISION: 5.2, GCID: 46426093, BOARD: generic, EABI: aarch64, DATE: Thu Jul 16 18:56:22 UTC 2026
+readlink -f /usr/local/cuda: /usr/local/cuda-12.6
+nvcc: Build cuda_12.6.r12.6/compiler.34714021_0
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+CUDA_COMPUTE_CAP=87
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda
+CUDARC_CUDA_VERSION=12060
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda/lib64
+##### summary.tsv
+run	source	exit
+build-k	k	0
+build-control	control	0
+T1-k-1	k	0
+T1-k-2	k	0
+T1-k-3	k	0
+T2-k	k	0
+T2-control	control	0
+T3-k	k	0
+T3-control	control	0
+T4-k	k	0
+T4-control	control	0
+T5-k	k	0
+T5-control	control	0
+T8-k	k	0
+##### locks.sha256
+aaacdf15705f1d05ec86d91b5727779d057395e3b5d9f815aedffcb521bd438e  /home/coreyt/fathomdb-forks/candle-cells/K-G3/src-k/Cargo.lock
+8b9cfeb3971e347993bec8b03da14da90082b315441bc2624e29e7b78b82bf24  /home/coreyt/fathomdb-forks/candle-cells/K-G3/src-control/Cargo.lock
+##### locks.diff
+272c272
+<  "cudarc-fathomdb",
+---
+>  "cudarc 0.19.10",
+676,685d675
+< dependencies = [
+<  "float8",
+<  "half",
+<  "libloading 0.9.0",
+< ]
+< 
+< [[package]]
+< name = "cudarc-fathomdb"
+< version = "0.19.10"
+< source = "git+https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d94eedca8334e9331cf520d554b22544b7"
+##### T6-ck-ac-01.txt
+== candle-core-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d9)
+cudarc lines (expected none):
+== candle-nn-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d9)
+cudarc lines (expected none):
+== candle-transformers-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d9)
+cudarc lines (expected none):
+##### T7-ck-ac-04.txt
+k cuda_private_pool forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libm.so.6 libc.so.6 ld-linux-aarch64.so.1]
+k cuda_from_context forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libm.so.6 libc.so.6 ld-linux-aarch64.so.1]
+k candle_core forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libm.so.6 libc.so.6 ld-linux-aarch64.so.1]
+control cuda_private_pool absent
+control cuda_from_context forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libm.so.6 libc.so.6 ld-linux-aarch64.so.1]
+control candle_core forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libm.so.6 libc.so.6 ld-linux-aarch64.so.1]
+##### T1-loaded-libraries.txt
+file=/lib/aarch64-linux-gnu/libcuda.so
+file=libcublasLt.so.12
+file=libcublas.so.12
+file=libcuda.so
+file=libcurand.so.10
+file=/usr/local/cuda/lib64/libcublasLt.so.12
+file=/usr/local/cuda/lib64/libcublas.so.12
+file=/usr/local/cuda/lib64/libcurand.so.10
+##### test result lines per run
+== T1-k-1.log
+     Running tests/cuda_private_pool.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cuda_private_pool-34a85b61fa0e1161)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+== T1-k-2.log
+     Running tests/cuda_private_pool.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cuda_private_pool-34a85b61fa0e1161)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+== T1-k-3.log
+     Running tests/cuda_private_pool.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cuda_private_pool-34a85b61fa0e1161)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+== T2-k.log
+     Running tests/cuda_from_context.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cuda_from_context-622538719e28ba3b)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+== T3-k.log
+     Running unittests src/lib.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/candle_core-9210afeb1d160c8a)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.29s
+     Running tests/aarch64_linux_cpu.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/aarch64_linux_cpu-54e52926f503aabb)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/bilinear_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/bilinear_tests-4d77bba0a9d896e2)
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.05s
+     Running tests/conv_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/conv_tests-e1d4d0e7cd5ec6d9)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+     Running tests/cuda_from_context.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cuda_from_context-622538719e28ba3b)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+     Running tests/cuda_private_pool.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cuda_private_pool-34a85b61fa0e1161)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+     Running tests/custom_op_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/custom_op_tests-5bc95a371eab8e5e)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/display_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/display_tests-fc8f2d2bd388ace9)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/grad_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/grad_tests-71da044e1461cbe6)
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+     Running tests/indexing_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/indexing_tests-612ebb02cd2a56fa)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layout_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/layout_tests-b6b9f7a1a11b875a)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+     Running tests/matmul_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/matmul_tests-41d972c2517dea5b)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+     Running tests/pool_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/pool_tests-22b201e1f66584e4)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+     Running tests/pth_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/pth_tests-f3ad997f50518e35)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/quantized_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/quantized_tests-9a7a3dc847e9d06c)
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.66s
+     Running tests/serialization_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/serialization_tests-50bef0496bb3c1c3)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/tensor_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/tensor_tests-976736d07b6b5888)
+test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.48s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.07s
+== T4-k.log
+     Running unittests src/lib.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/candle_nn-9461c91f2840dcf4)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/batch_norm.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/batch_norm-66372043edd5bdd1)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/cpu_flash_attn.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/cpu_flash_attn-1c8cde382a87f6c8)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+     Running tests/group_norm.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/group_norm-c495bf8a318ff501)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/kv_cache.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/kv_cache-0e79717019bf5511)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layer_norm.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/layer_norm-df8e226641b228d9)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/loss.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/loss-f7bc37ea87abc62a)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/one_hot.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/one_hot-22ee574ecc2228c1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/ops.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/ops-970bc569c50c8ff5)
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+     Running tests/optim.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/optim-c64e106c55a88ee1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/rnn.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/rnn-66c1e92bb4531597)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/sdpa.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/sdpa-46ab5e54ae381471)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 6.80s
+== T5-k.log
+     Running tests/aarch64_linux_cpu.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-k/debug/deps/aarch64_linux_cpu-a13ab72abfeb61dd)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+== T8-k.log
+== T2-control.log
+     Running tests/cuda_from_context.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/cuda_from_context-247f364294c579d7)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+== T3-control.log
+     Running unittests src/lib.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/candle_core-512e00ba2eac2ef1)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.43s
+     Running tests/aarch64_linux_cpu.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/aarch64_linux_cpu-096e002c2ed50d59)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/bilinear_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/bilinear_tests-3a559e7b9fc4b20b)
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+     Running tests/conv_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/conv_tests-60f37dfa1775a135)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+     Running tests/cuda_from_context.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/cuda_from_context-247f364294c579d7)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+     Running tests/custom_op_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/custom_op_tests-27c93623e9c7ba07)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/display_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/display_tests-7de68b2a86c3f46e)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/grad_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/grad_tests-6237fbae07fbbb91)
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+     Running tests/indexing_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/indexing_tests-afa327d71faed9d3)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layout_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/layout_tests-3ad447fc4cf48fde)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+     Running tests/matmul_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/matmul_tests-4778932bbeb510bb)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+     Running tests/pool_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/pool_tests-66f5b7b8b2ab5981)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+     Running tests/pth_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/pth_tests-7efc51b9bbe113f6)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/quantized_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/quantized_tests-ff9ab4e892f47e28)
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.36s
+     Running tests/serialization_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/serialization_tests-df23581a688aa586)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/tensor_tests.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/tensor_tests-2c4635d8cc597c6b)
+test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 27.65s
+== T4-control.log
+     Running unittests src/lib.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/candle_nn-26e5174f9324dbdb)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/batch_norm.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/batch_norm-9652ee967a5370ce)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/cpu_flash_attn.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/cpu_flash_attn-1a7faa86ebaae954)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+     Running tests/group_norm.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/group_norm-56462f7910710ddd)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/kv_cache.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/kv_cache-1cccdf90cdfa6b93)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layer_norm.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/layer_norm-ae4c4eb9692270e0)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/loss.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/loss-6a5e0de9b6076980)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/one_hot.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/one_hot-dee0529ca2daa94b)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/ops.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/ops-f2ff0b60e1b12cf1)
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s
+     Running tests/optim.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/optim-38b3d990f2b938ee)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/rnn.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/rnn-b20359433ac455f0)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/sdpa.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/sdpa-094fba3eb0e7a690)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 6.65s
+== T5-control.log
+     Running tests/aarch64_linux_cpu.rs (/home/coreyt/fathomdb-forks/candle-cells/K-G3/target-control/debug/deps/aarch64_linux_cpu-a13ab72abfeb61dd)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

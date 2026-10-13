@@ -1,0 +1,74 @@
+##### host.txt
+== start 2026-10-13T00:05:48Z
+host: windchill3 Linux 7.0.0-38-generic x86_64
+0, NVIDIA GeForce RTX 3090, 00000000:41:00.0, 580.178.04, 8.6
+1, NVIDIA GeForce RTX 3090, 00000000:42:00.0, 580.178.04, 8.6
+2, Quadro K620, 00000000:61:00.0, 580.178.04, 5.0
+readlink -f /usr/local/cuda: /usr/local/cuda-12.6
+nvcc: Build cuda_12.6.r12.6/compiler.34714021_0
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+CUDA_COMPUTE_CAP=75
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda
+CUDARC_CUDA_VERSION=12060
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda/lib64
+== end 2026-10-13T00:07:10Z
+host: windchill3 Linux 7.0.0-38-generic x86_64
+0, NVIDIA GeForce RTX 3090, 00000000:41:00.0, 580.178.04, 8.6
+1, NVIDIA GeForce RTX 3090, 00000000:42:00.0, 580.178.04, 8.6
+2, Quadro K620, 00000000:61:00.0, 580.178.04, 5.0
+readlink -f /usr/local/cuda: /usr/local/cuda-12.6
+nvcc: Build cuda_12.6.r12.6/compiler.34714021_0
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+CUDA_COMPUTE_CAP=75
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda
+CUDARC_CUDA_VERSION=12060
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda/lib64
+##### summary.tsv
+run	source	exit
+build-k	k	0
+build-control	control	0
+T1-k-1	k	0
+T2-k	k	0
+T2-control	control	0
+##### locks.sha256
+aaacdf15705f1d05ec86d91b5727779d057395e3b5d9f815aedffcb521bd438e  src-k/Cargo.lock
+8b9cfeb3971e347993bec8b03da14da90082b315441bc2624e29e7b78b82bf24  src-control/Cargo.lock
+##### locks.diff
+272c272
+<  "cudarc-fathomdb",
+---
+>  "cudarc 0.19.10",
+676,685d675
+< dependencies = [
+<  "float8",
+<  "half",
+<  "libloading 0.9.0",
+< ]
+< 
+< [[package]]
+< name = "cudarc-fathomdb"
+< version = "0.19.10"
+< source = "git+https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d94eedca8334e9331cf520d554b22544b7"
+##### T1-loaded-libraries.txt
+file=libcublasLt.so.12
+file=libcublas.so.12
+file=libcuda.so
+file=libcurand.so.10
+file=/lib/x86_64-linux-gnu/libcuda.so
+file=/usr/local/cuda/lib64/libcublasLt.so.12
+file=/usr/local/cuda/lib64/libcublas.so.12
+file=/usr/local/cuda/lib64/libcurand.so.10
+##### test result lines per run
+== T1-k-1.log
+     Running tests/cuda_private_pool.rs (target-k/debug/deps/cuda_private_pool-d79e54539b075f84)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+== T2-k.log
+     Running tests/cuda_from_context.rs (target-k/debug/deps/cuda_from_context-e2089daa71b687b6)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+== T2-control.log
+     Running tests/cuda_from_context.rs (target-control/debug/deps/cuda_from_context-cbedc963e475343c)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s

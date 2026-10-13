@@ -1,0 +1,261 @@
+##### host.txt
+== start 2026-10-13T00:12:56Z
+host: fdb-lab-kg2-1 Linux 7.0.0-1014-gcp x86_64
+0, Tesla T4, 00000000:00:04.0, 580.178.04, 7.5
+readlink -f /usr/local/cuda: /usr/local/cuda-13.0
+nvcc: Build cuda_13.0.r13.0/compiler.36424714_0
+cargo: cargo 1.99.0 (5f94df478 2026-08-27)
+CUDARC_CUDA_VERSION=13000
+CUDA_COMPUTE_CAP=75
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda-13.0
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64
+== end 2026-10-13T00:23:39Z
+host: fdb-lab-kg2-1 Linux 7.0.0-1014-gcp x86_64
+0, Tesla T4, 00000000:00:04.0, 580.178.04, 7.5
+readlink -f /usr/local/cuda: /usr/local/cuda-13.0
+nvcc: Build cuda_13.0.r13.0/compiler.36424714_0
+cargo: cargo 1.99.0 (5f94df478 2026-08-27)
+CUDARC_CUDA_VERSION=13000
+CUDA_COMPUTE_CAP=75
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda-13.0
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64
+##### summary.tsv
+run	source	exit
+build-k	k	0
+build-control	control	0
+T1-k-1	k	0
+T1-k-2	k	0
+T1-k-3	k	0
+T2-k	k	0
+T2-control	control	0
+T3-k	k	101
+T3-control	control	101
+T4-k	k	0
+T4-control	control	0
+T8-k	k	0
+##### locks.sha256
+aaacdf15705f1d05ec86d91b5727779d057395e3b5d9f815aedffcb521bd438e  /home/coreyt/kg2/K-G2/src-k/Cargo.lock
+8b9cfeb3971e347993bec8b03da14da90082b315441bc2624e29e7b78b82bf24  /home/coreyt/kg2/K-G2/src-control/Cargo.lock
+##### locks.diff
+272c272
+<  "cudarc-fathomdb",
+---
+>  "cudarc 0.19.10",
+676,685d675
+< dependencies = [
+<  "float8",
+<  "half",
+<  "libloading 0.9.0",
+< ]
+< 
+< [[package]]
+< name = "cudarc-fathomdb"
+< version = "0.19.10"
+< source = "git+https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d94eedca8334e9331cf520d554b22544b7"
+##### T6-ck-ac-01.txt
+== candle-core-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d9)
+cudarc lines (expected none):
+== candle-nn-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d9)
+cudarc lines (expected none):
+== candle-transformers-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10 (https://github.com/coreyt/cudarc.git?rev=b777f8d94eedca8334e9331cf520d554b22544b7#b777f8d9)
+cudarc lines (expected none):
+##### T7-ck-ac-04.txt
+k cuda_private_pool forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+k cuda_from_context forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+k candle_core forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+control cuda_private_pool absent
+control cuda_from_context forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+control candle_core forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+##### T1-loaded-libraries.txt
+file=/lib/x86_64-linux-gnu/libcuda.so
+file=/usr/local/cuda-13.0/lib64/libcublas.so.13
+file=/usr/local/cuda-13.0/lib64/libcublasLt.so.13
+file=/usr/local/cuda-13.0/lib64/libcurand.so.10
+file=libcublas.so.13
+file=libcublasLt.so.13
+file=libcuda.so
+file=libcurand.so.10
+##### VM setup (vm-setup-cuda13.sh) output tail
+CFLAGS_x86_64_unknown_linux_gnu = None
+cargo:rerun-if-env-changed=CFLAGS_x86_64-unknown-linux-gnu
+CFLAGS_x86_64-unknown-linux-gnu = None
+rustc 1.99.0 (b940084d7 2026-09-28)
+Build cuda_13.0.r13.0/compiler.36424714_0
+Tesla T4, 580.178.04, 7.5
+cuda-cccl-13-0 13.0.85-1
+cuda-crt-13-0 13.0.88-1
+cuda-cudart-13-0 13.0.96-1
+cuda-cudart-dev-13-0 13.0.96-1
+cuda-culibos-dev-13-0 13.0.85-1
+cuda-driver-dev-13-0 13.0.96-1
+cuda-keyring 1.1-1
+cuda-nvcc-13-0 13.0.88-1
+cuda-nvrtc-13-0 13.0.88-1
+cuda-nvrtc-dev-13-0 13.0.88-1
+cuda-toolkit-13-0-config-common 13.0.96-1
+cuda-toolkit-13-config-common 13.4.92-1
+cuda-toolkit-config-common 13.4.92-1
+libnvidia-cfg1-580-server:amd64 580.178.04-0ubuntu0.24.04.1
+libnvidia-compute-580-server:amd64 580.178.04-0ubuntu0.24.04.1
+linux-modules-nvidia-580-server-7.0.0-1014-gcp 7.0.0-1014.14~24.04.1+2
+linux-objects-nvidia-580-server-7.0.0-1014-gcp 7.0.0-1014.14~24.04.1+2
+linux-signatures-nvidia-7.0.0-1014-gcp 7.0.0-1014.14~24.04.1+2
+nvidia-compute-utils-580-server 580.178.04-0ubuntu0.24.04.1
+nvidia-firmware-580-server-580.178.04 580.178.04-0ubuntu0.24.04.1
+nvidia-headless-no-dkms-580-server 580.178.04-0ubuntu0.24.04.1
+nvidia-kernel-common-580-server 580.178.04-0ubuntu0.24.04.1
+nvidia-kernel-source-580-server 580.178.04-0ubuntu0.24.04.1
+nvidia-utils-580-server 580.178.04-0ubuntu0.24.04.1
+##### test result lines per run
+== T1-k-1.log
+     Running tests/cuda_private_pool.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cuda_private_pool-566c5e9d8c1f6e46)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.14s
+== T1-k-2.log
+     Running tests/cuda_private_pool.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cuda_private_pool-566c5e9d8c1f6e46)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.83s
+== T1-k-3.log
+     Running tests/cuda_private_pool.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cuda_private_pool-566c5e9d8c1f6e46)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+== T2-k.log
+     Running tests/cuda_from_context.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cuda_from_context-55c74876ee004564)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.95s
+== T3-k.log
+     Running unittests src/lib.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/candle_core-4e7afcde33e032c6)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.46s
+     Running tests/aarch64_linux_cpu.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/aarch64_linux_cpu-e867f7c18fc14df3)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/bilinear_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/bilinear_tests-a7327000102b4eef)
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.59s
+     Running tests/conv_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/conv_tests-1033379ed4806246)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.91s
+     Running tests/cuda_from_context.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cuda_from_context-55c74876ee004564)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.81s
+     Running tests/cuda_private_pool.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cuda_private_pool-566c5e9d8c1f6e46)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+     Running tests/custom_op_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/custom_op_tests-2e09318dbf77af99)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/display_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/display_tests-17e8d4cdba1016f5)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/grad_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/grad_tests-a675f5058194474f)
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.54s
+     Running tests/indexing_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/indexing_tests-2c759090e8320ce1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layout_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/layout_tests-05ca63fc99638979)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+     Running tests/matmul_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/matmul_tests-51af2d192821c1a7)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.88s
+     Running tests/pool_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/pool_tests-0b66b69df5d159da)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.83s
+     Running tests/pth_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/pth_tests-acfe998c71ee49d0)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/quantized_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/quantized_tests-b4886eaa7806a4a9)
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 41.90s
+     Running tests/serialization_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/serialization_tests-7dbb8a6f589514a9)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/tensor_tests.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/tensor_tests-92cdd4112bb6a8f6)
+test ones_gpu ... FAILED
+Error: DriverError(CUDA_ERROR_NOT_FOUND, "named symbol not found")
+test result: FAILED. 84 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.09s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.29s
+== T4-k.log
+     Running unittests src/lib.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/candle_nn-c0dbc701929cf92b)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/batch_norm.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/batch_norm-d399e42a5e4e8989)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/cpu_flash_attn.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/cpu_flash_attn-ec6ea4e72a1075a4)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/group_norm.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/group_norm-3165dac085e52a49)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/kv_cache.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/kv_cache-8fd58891ab416ef8)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layer_norm.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/layer_norm-a921025533baf297)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/loss.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/loss-76f746cd63f660e4)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/one_hot.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/one_hot-d64bdfa921744984)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/ops.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/ops-42c4e6951e0541d0)
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.10s
+     Running tests/optim.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/optim-0290b0906fcef0c1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/rnn.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/rnn-3db3d928e2d04950)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/sdpa.rs (/home/coreyt/kg2/K-G2/target-k/debug/deps/sdpa-4217d132b7560e09)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 3.05s
+== T8-k.log
+== T2-control.log
+     Running tests/cuda_from_context.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/cuda_from_context-1e0b527f6b01ec56)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.82s
+== T3-control.log
+     Running unittests src/lib.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/candle_core-c4dcb487964197e3)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.62s
+     Running tests/aarch64_linux_cpu.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/aarch64_linux_cpu-1ce3c4b9bb06676a)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/bilinear_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/bilinear_tests-2e6f821c7cb77c0f)
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.98s
+     Running tests/conv_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/conv_tests-e80af89dbf452fb4)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.90s
+     Running tests/cuda_from_context.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/cuda_from_context-1e0b527f6b01ec56)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+     Running tests/custom_op_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/custom_op_tests-c70ebf4a542aa972)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/display_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/display_tests-0be177f46f97ee0d)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/grad_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/grad_tests-e504f9a047e284ef)
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.94s
+     Running tests/indexing_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/indexing_tests-8cd509bd7791825e)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layout_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/layout_tests-f145587a30a80983)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.81s
+     Running tests/matmul_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/matmul_tests-169d5fa0b83f2c11)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.89s
+     Running tests/pool_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/pool_tests-1065f8521da7cf52)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.85s
+     Running tests/pth_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/pth_tests-1813d614872d521d)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/quantized_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/quantized_tests-92e01b8877c23d72)
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 42.11s
+     Running tests/serialization_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/serialization_tests-070990f1ef5267f4)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/tensor_tests.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/tensor_tests-7d1abb7ef0a579be)
+test ones_gpu ... FAILED
+Error: DriverError(CUDA_ERROR_NOT_FOUND, "named symbol not found")
+test result: FAILED. 84 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.06s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.37s
+== T4-control.log
+     Running unittests src/lib.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/candle_nn-a8251a5202613b59)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/batch_norm.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/batch_norm-b64e2bb571daebe8)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/cpu_flash_attn.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/cpu_flash_attn-043d1dda87828f9d)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/group_norm.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/group_norm-e7fe6fc3e189ce14)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/kv_cache.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/kv_cache-672ed5df8b3efc1e)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layer_norm.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/layer_norm-e03790522e30c7bf)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/loss.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/loss-b325589e115eea97)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/one_hot.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/one_hot-79bc3eddcd4ab0fb)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/ops.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/ops-ff2606032f63ea70)
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.87s
+     Running tests/optim.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/optim-3010628e58073d3a)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+     Running tests/rnn.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/rnn-204b1cdad46a2964)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/sdpa.rs (/home/coreyt/kg2/K-G2/target-control/debug/deps/sdpa-26e591cf27530721)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 3.24s
