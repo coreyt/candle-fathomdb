@@ -1,0 +1,33 @@
+    Updating crates.io index
+   Packaging candle-core-fathomdb v0.11.0 (…/pub-candle/candle-core)
+    Updating crates.io index
+    Packaged 108 files, 1.5MiB (268.3KiB compressed)
+   Packaging candle-nn-fathomdb v0.11.0 (…/pub-candle/candle-nn)
+    Updating crates.io index
+    Packaged 46 files, 396.9KiB (81.5KiB compressed)
+   Packaging candle-transformers-fathomdb v0.11.0 (…/pub-candle/candle-transformers)
+    Updating crates.io index
+    Packaged 210 files, 2.6MiB (478.7KiB compressed)
+   Verifying candle-core-fathomdb v0.11.0 (…/pub-candle/candle-core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.60s
+   Verifying candle-nn-fathomdb v0.11.0 (…/pub-candle/candle-nn)
+    Updating crates.io index
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.36s
+   Verifying candle-transformers-fathomdb v0.11.0 (…/pub-candle/candle-transformers)
+    Updating crates.io index
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.77s
+   Uploading candle-core-fathomdb v0.11.0 (…/pub-candle/candle-core)
+    Uploaded candle-core-fathomdb v0.11.0 to registry `crates-io`
+note: waiting for candle-core-fathomdb v0.11.0 to be available at registry `crates-io`.
+      2 remaining crates to be published
+   Published candle-core-fathomdb v0.11.0 at registry `crates-io`
+   Uploading candle-nn-fathomdb v0.11.0 (…/pub-candle/candle-nn)
+    Uploaded candle-nn-fathomdb v0.11.0 to registry `crates-io`
+note: waiting for candle-nn-fathomdb v0.11.0 to be available at registry `crates-io`.
+      1 remaining crate to be published
+   Published candle-nn-fathomdb v0.11.0 at registry `crates-io`
+   Uploading candle-transformers-fathomdb v0.11.0 (…/pub-candle/candle-transformers)
+    Uploaded candle-transformers-fathomdb v0.11.0 to registry `crates-io`
+note: waiting for candle-transformers-fathomdb v0.11.0 to be available at registry `crates-io`
+help: you may press ctrl-c to skip waiting; the crate should be available shortly
+   Published candle-transformers-fathomdb v0.11.0 at registry `crates-io`

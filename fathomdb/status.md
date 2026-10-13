@@ -223,3 +223,15 @@ Newest entries last. Shas are verified from git.
 - R-FK-PUB recorded in `review.md` (APPROVE at K8; finding 1 → K9).
 - **Next:** R-FK-PUB re-check of K9, then the owner-approved publish of
   the three crates 0.11.0 from a clean worktree of K9.
+
+### Published (2026-10-13)
+
+- `candle-core-fathomdb`, `candle-nn-fathomdb` and
+  `candle-transformers-fathomdb` 0.11.0 are on crates.io, published from a
+  clean detached worktree of `K9 = 182ceab0` at 16:51Z after the R-FK-PUB
+  re-check (APPROVE). Receipt
+  `qualification/2026-10-13-FK5-publish-182ceab0.md`: each registry
+  `.crate` equals the dry run; each names K9 with no `dirty`; every
+  packaged source file equals K9.
+- FK5 is done. FathomDB W6 pins the three crates `=0.11.0` and patches
+  `candle-kernels` by git at K9.

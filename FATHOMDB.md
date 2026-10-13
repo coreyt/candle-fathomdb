@@ -50,7 +50,7 @@ Class: `U` upstream-shaped code, proposable upstream; `L` local-only code;
 | K7 | `0d6fa138` | Depends on `cudarc-fathomdb` (FathomDB's cudarc fork, which adds a private memory pool) as `cudarc = { package = "cudarc-fathomdb", ... }`; the crate name stays `cudarc` and the features are unchanged. `0d6fa138` pinned a git commit; since K8 it is registry `cudarc-fathomdb` 0.19.10 | `P` | not applicable: upstream uses registry `cudarc` (0.19.8 on `0.11.0`, 0.19.10 on `main`) | drop when upstream cudarc ships an equivalent private-pool API in a release Candle uses, or FathomDB no longer needs private pools |
 | K7t | `d4ffdf58`, `853324fc` | Test `candle-core/tests/cuda_private_pool.rs`: a device built on a private-pool context allocates from that pool and leaves the default pool untouched | `L` | not applicable: tests K7's dependency | drop with K7 |
 | K8 | `cd64715e` | 0.10.4 versions, depending on registry `cudarc-fathomdb` 0.19.10; superseded for publication by K9 | `P` | not applicable | drop with K7 and K1 |
-| K9 | `182ceab0` | 0.11.0 versions (the public `cudarc` re-export changed crate, a semver break); fork `description` on the three crates | `P` | not applicable | drop with K7 and K1 |
+| K9 | `182ceab0` | 0.11.0 versions (the public `cudarc` re-export changed crate, a semver break); fork `description` on the three crates; 0.11.0 is the fork's own number (base upstream `0.10.2`), not upstream Candle 0.11.0 | `P` | not applicable | drop with K7 and K1 |
 
 ## Notes
 
