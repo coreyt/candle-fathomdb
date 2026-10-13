@@ -103,3 +103,26 @@ Every review is an independent Opus subagent, read-only (plan § 8).
 | F6 | Info | K-G2 installed toolkit component packages, not `cuda-toolkit-13-0` | requirements § 2 names the packages |
 | F7 | Info | K-G2 control runs interleaved with K runs; receipt files dated by start date | none |
 | F8 | Info | `37bc0b4e`, `7e55a579` (FK0, before the trailer rule was applied to this fork) lack `Claude-Session` | none; `Fork-Class: D` parses |
+
+## R-FK-PUB (FK5), 2026-10-13
+
+- Model: `opus` (Claude Opus), general-purpose, read-only. It repeated the
+  multi-package publish dry run from a clean worktree of K8, compared the
+  packages with the published 0.10.3 `.crate` files, built a consumer of
+  the packaged crates with `cuda` (no patch table), and checked every
+  number in `qualification/2026-10-13-CK-AC-07-cd64715e.md` against its
+  logs.
+- Reviewed: `K8` = `cd64715e`, tip `ddff4cbd`.
+- Verdict: APPROVE. No finding needed a code change, but the owner chose
+  to fix finding 1 by renumbering (ruling below), so the publication
+  commit is `K9` = `182ceab0`, re-qualified by
+  `qualification/2026-10-13-CK-AC-07-182ceab0.md`.
+
+| Finding | Severity | Defect (short) | Disposition |
+| --- | --- | --- | --- |
+| 1 | Medium | 0.10.3 → 0.10.4 swaps candle-core's re-exported dependency (`pub use cudarc;`) from upstream `cudarc` 0.19.4 to the crate `cudarc-fathomdb`: semver-breaking for users passing their own `cudarc` types | owner ruling 2026-10-13: publish as 0.11.0; `K9` |
+| 2 | Medium | published crates use upstream registry `candle-kernels` 0.10.2; a no-patch consumer links `-lcudart` and needs `LIBRARY_PATH` to the CUDA libraries | FathomDB-side: carried to Slice 31 AC31-08 (T-REGISTRY); documented in `FATHOMDB.md` |
+| 3 | Low | crates.io description did not say the crates are forks | fixed in `K9` (fork `description` on each crate) |
+| 4 | Low | `FATHOMDB.md` K7 row still described the git dependency | fixed in `4abb8b38` |
+| 5 | Low | `flash-attn` pulls upstream `candle-core` 0.10.2 and a second cudarc | documented as unsupported in `FATHOMDB.md` (`4abb8b38`) |
+| 6 | Low | `37bc0b4e`, `7e55a579` lack `Claude-Session` (as R-FK-VERIFY F8) | exempt: FK0 commits before the trailer rule; `Fork-Class: D` parses; no history rewrite |

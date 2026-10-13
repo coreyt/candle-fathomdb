@@ -212,3 +212,14 @@ Newest entries last. Shas are verified from git.
 - `FATHOMDB.md`: K9 row, K8 marked superseded, usage example 0.11.0, K7 row
   reworded for the registry dependency (R-FK-PUB finding 4), `flash-attn`
   note (finding 5).
+
+### CK-AC-07 GPU cells at `K9` (2026-10-13)
+
+- K-G1 (RTX 3090) and K-G3 (Orin) at `182ceab0547348993b6dbec4b1aed610dcc8b23f`,
+  control K8 `cd64715e`: every run equals the control (T3 297 and 298
+  passed, T4 50/0/2, T1 1/0/0 ×3, T5 1/0/0); CK-AC-01 and CK-AC-04 pass;
+  K9 lock `131ca228…` on both hosts, differing from K8's only in the three
+  versions. Receipt `qualification/2026-10-13-CK-AC-07-182ceab0.md`.
+- R-FK-PUB recorded in `review.md` (APPROVE at K8; finding 1 → K9).
+- **Next:** R-FK-PUB re-check of K9, then the owner-approved publish of
+  the three crates 0.11.0 from a clean worktree of K9.

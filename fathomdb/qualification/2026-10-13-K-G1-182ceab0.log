@@ -1,0 +1,244 @@
+##### host.txt
+== start 2026-10-13T16:35:54Z
+host: windchill3 Linux 7.0.0-38-generic x86_64
+0, NVIDIA GeForce RTX 3090, 00000000:41:00.0, 580.178.04, 8.6
+1, NVIDIA GeForce RTX 3090, 00000000:42:00.0, 580.178.04, 8.6
+2, Quadro K620, 00000000:61:00.0, 580.178.04, 5.0
+readlink -f /usr/local/cuda: /usr/local/cuda-12.6
+nvcc: Build cuda_12.6.r12.6/compiler.34714021_0
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+CUDA_COMPUTE_CAP=86
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda-12.6
+CUDARC_CUDA_VERSION=12060
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda-12.6/lib64
+source k: commit 182ceab0547348993b6dbec4b1aed610dcc8b23f tree 4c1c82e6fa807a131c8a4e0fbeb81aa1c491012f
+source control: commit cd64715ead4f86470b195a9010c4f60f7a4c0833 tree a9e87c734497681edf9b372d2669f7e2c5e71555
+== end 2026-10-13T16:39:06Z
+host: windchill3 Linux 7.0.0-38-generic x86_64
+0, NVIDIA GeForce RTX 3090, 00000000:41:00.0, 580.178.04, 8.6
+1, NVIDIA GeForce RTX 3090, 00000000:42:00.0, 580.178.04, 8.6
+2, Quadro K620, 00000000:61:00.0, 580.178.04, 5.0
+readlink -f /usr/local/cuda: /usr/local/cuda-12.6
+nvcc: Build cuda_12.6.r12.6/compiler.34714021_0
+cargo: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+CUDA_COMPUTE_CAP=86
+CUDA_DEVICE_ORDER=PCI_BUS_ID
+CUDA_PATH=/usr/local/cuda-12.6
+CUDARC_CUDA_VERSION=12060
+CUDA_VISIBLE_DEVICES=0
+LD_LIBRARY_PATH=/usr/local/cuda-12.6/lib64
+##### summary.tsv
+run	source	exit
+build-k	k	0
+build-control	control	0
+T1-k-1	k	0
+T1-k-2	k	0
+T1-k-3	k	0
+T1-ld-debug	k	0
+T2-k	k	0
+T2-control	control	0
+T3-k	k	0
+T3-control	control	0
+T4-k	k	0
+T4-control	control	0
+T8-k	k	0
+##### locks.sha256
+131ca2284050f37a5f1dcfcb8f8a35a896c0f408d569c53aeecc53a0c90e4ec3  …/K-G1/src-k/Cargo.lock
+085e38af2fbfde7c617a57bd57e04a1c86fe1f125fcdfef693d5982beca96c3f  …/K-G1/src-control/Cargo.lock
+##### locks.diff
+262c262
+< version = "0.11.0"
+---
+> version = "0.10.4"
+339c339
+< version = "0.11.0"
+---
+> version = "0.10.4"
+362c362
+< version = "0.11.0"
+---
+> version = "0.10.4"
+##### T6-ck-ac-01.txt
+== candle-core-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10
+cudarc lines (expected none):
+== candle-nn-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10
+cudarc lines (expected none):
+== candle-transformers-fathomdb
+cudarc-fathomdb lines:
+cudarc-fathomdb v0.19.10
+cudarc lines (expected none):
+##### T7-ck-ac-04.txt
+k cuda_private_pool forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+k cuda_from_context forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+k candle_core forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+control cuda_private_pool forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+control cuda_from_context forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+control candle_core forbidden_needed=0 cudaGetDeviceCount_defined=1 needed=[libgcc_s.so.1 libc.so.6 ld-linux-x86-64.so.2]
+##### T1-loaded-libraries.txt
+file=libcublasLt.so.12
+file=libcublas.so.12
+file=libcuda.so
+file=libcurand.so.10
+file=/lib/x86_64-linux-gnu/libcuda.so
+file=/usr/local/cuda-12.6/lib64/libcublasLt.so.12
+file=/usr/local/cuda-12.6/lib64/libcublas.so.12
+file=/usr/local/cuda-12.6/lib64/libcurand.so.10
+##### test result lines per run
+== T1-k-1.log
+     Running tests/cuda_private_pool.rs (…/K-G1/target-k/debug/deps/cuda_private_pool-0eaf8cd0996b839e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
+== T1-k-2.log
+     Running tests/cuda_private_pool.rs (…/K-G1/target-k/debug/deps/cuda_private_pool-0eaf8cd0996b839e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+== T1-k-3.log
+     Running tests/cuda_private_pool.rs (…/K-G1/target-k/debug/deps/cuda_private_pool-0eaf8cd0996b839e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+== T2-k.log
+     Running tests/cuda_from_context.rs (…/K-G1/target-k/debug/deps/cuda_from_context-963a0d5b7e82c27e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+== T2-control.log
+     Running tests/cuda_from_context.rs (…/K-G1/target-control/debug/deps/cuda_from_context-973d17dd5fdbd29f)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+== T3-k.log
+     Running unittests src/lib.rs (…/K-G1/target-k/debug/deps/candle_core-07c4968551d31c8f)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.17s
+     Running tests/aarch64_linux_cpu.rs (…/K-G1/target-k/debug/deps/aarch64_linux_cpu-f3fe6f35c40adebb)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/bilinear_tests.rs (…/K-G1/target-k/debug/deps/bilinear_tests-d6262dda5e4a667a)
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+     Running tests/conv_tests.rs (…/K-G1/target-k/debug/deps/conv_tests-504cdd084280c35c)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s
+     Running tests/cuda_from_context.rs (…/K-G1/target-k/debug/deps/cuda_from_context-963a0d5b7e82c27e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/cuda_private_pool.rs (…/K-G1/target-k/debug/deps/cuda_private_pool-0eaf8cd0996b839e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/custom_op_tests.rs (…/K-G1/target-k/debug/deps/custom_op_tests-38f1d1f70ec60c50)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/display_tests.rs (…/K-G1/target-k/debug/deps/display_tests-71f78ed8bec6d515)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/grad_tests.rs (…/K-G1/target-k/debug/deps/grad_tests-355440342b4449fb)
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s
+     Running tests/indexing_tests.rs (…/K-G1/target-k/debug/deps/indexing_tests-959d0c7c24b6bb39)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layout_tests.rs (…/K-G1/target-k/debug/deps/layout_tests-3db9bd1e1287069c)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/matmul_tests.rs (…/K-G1/target-k/debug/deps/matmul_tests-95e2af950bff244c)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+     Running tests/pool_tests.rs (…/K-G1/target-k/debug/deps/pool_tests-524dc67392c0f583)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/pth_tests.rs (…/K-G1/target-k/debug/deps/pth_tests-a37035f6464e5746)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+     Running tests/quantized_tests.rs (…/K-G1/target-k/debug/deps/quantized_tests-6270ce12bca26830)
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.85s
+     Running tests/serialization_tests.rs (…/K-G1/target-k/debug/deps/serialization_tests-39c29404296300f9)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/tensor_tests.rs (…/K-G1/target-k/debug/deps/tensor_tests-4e73927112acc0e8)
+test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.32s
+== T3-control.log
+     Running unittests src/lib.rs (…/K-G1/target-control/debug/deps/candle_core-2f9d8ca85886e563)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.20s
+     Running tests/aarch64_linux_cpu.rs (…/K-G1/target-control/debug/deps/aarch64_linux_cpu-a84188c7cdfdbe8c)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/bilinear_tests.rs (…/K-G1/target-control/debug/deps/bilinear_tests-1eca0c117f3f6bd9)
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+     Running tests/conv_tests.rs (…/K-G1/target-control/debug/deps/conv_tests-b36b7c15683cf71d)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s
+     Running tests/cuda_from_context.rs (…/K-G1/target-control/debug/deps/cuda_from_context-973d17dd5fdbd29f)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+     Running tests/cuda_private_pool.rs (…/K-G1/target-control/debug/deps/cuda_private_pool-7c8736869be4ea8d)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+     Running tests/custom_op_tests.rs (…/K-G1/target-control/debug/deps/custom_op_tests-d6f907e6148dc05d)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/display_tests.rs (…/K-G1/target-control/debug/deps/display_tests-bfe3bc655d1d1f3d)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/grad_tests.rs (…/K-G1/target-control/debug/deps/grad_tests-ab5c9b686ec65caa)
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s
+     Running tests/indexing_tests.rs (…/K-G1/target-control/debug/deps/indexing_tests-ae3dc9b5e42672f9)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layout_tests.rs (…/K-G1/target-control/debug/deps/layout_tests-8b463ccd74bc1b6f)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+     Running tests/matmul_tests.rs (…/K-G1/target-control/debug/deps/matmul_tests-b9c9483fcfa09060)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+     Running tests/pool_tests.rs (…/K-G1/target-control/debug/deps/pool_tests-11789393b4fed353)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+     Running tests/pth_tests.rs (…/K-G1/target-control/debug/deps/pth_tests-d0b1c59bee9cdf97)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/quantized_tests.rs (…/K-G1/target-control/debug/deps/quantized_tests-158c419019a2359d)
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.88s
+     Running tests/serialization_tests.rs (…/K-G1/target-control/debug/deps/serialization_tests-da255aecd7df03f4)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/tensor_tests.rs (…/K-G1/target-control/debug/deps/tensor_tests-c79bcc2eec84ffb5)
+test result: ok. 85 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.04s
+== T4-k.log
+     Running unittests src/lib.rs (…/K-G1/target-k/debug/deps/candle_nn-83dc99e30ab7ca92)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/batch_norm.rs (…/K-G1/target-k/debug/deps/batch_norm-004be0da701850c2)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/cpu_flash_attn.rs (…/K-G1/target-k/debug/deps/cpu_flash_attn-26c55bd7350ea935)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/group_norm.rs (…/K-G1/target-k/debug/deps/group_norm-1165b917b1fcbac8)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/kv_cache.rs (…/K-G1/target-k/debug/deps/kv_cache-e60eae06f7cc2b67)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layer_norm.rs (…/K-G1/target-k/debug/deps/layer_norm-496d196a9ca7e22e)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/loss.rs (…/K-G1/target-k/debug/deps/loss-70dfaa945b2a4c84)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/one_hot.rs (…/K-G1/target-k/debug/deps/one_hot-1b14136b649bbdbb)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/ops.rs (…/K-G1/target-k/debug/deps/ops-ea7da370ab220096)
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+     Running tests/optim.rs (…/K-G1/target-k/debug/deps/optim-35b2b8dc8aed5579)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+     Running tests/rnn.rs (…/K-G1/target-k/debug/deps/rnn-1794890b57daae5c)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/sdpa.rs (…/K-G1/target-k/debug/deps/sdpa-67f1e0c17eda4c82)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.66s
+== T4-control.log
+     Running unittests src/lib.rs (…/K-G1/target-control/debug/deps/candle_nn-502b13cc3a1fabef)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/batch_norm.rs (…/K-G1/target-control/debug/deps/batch_norm-47aa88db9beec824)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/cpu_flash_attn.rs (…/K-G1/target-control/debug/deps/cpu_flash_attn-2d87808b264a4657)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/group_norm.rs (…/K-G1/target-control/debug/deps/group_norm-421d266d0b76332f)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/kv_cache.rs (…/K-G1/target-control/debug/deps/kv_cache-667f90c1f2043c9f)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/layer_norm.rs (…/K-G1/target-control/debug/deps/layer_norm-c18b259f3279b193)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/loss.rs (…/K-G1/target-control/debug/deps/loss-eda227545aae3d79)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/one_hot.rs (…/K-G1/target-control/debug/deps/one_hot-d339da391e520cb1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/ops.rs (…/K-G1/target-control/debug/deps/ops-6c5ec85571348856)
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+     Running tests/optim.rs (…/K-G1/target-control/debug/deps/optim-877260e72e8c7fe1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+     Running tests/rnn.rs (…/K-G1/target-control/debug/deps/rnn-e80d0bcf58578aff)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/sdpa.rs (…/K-G1/target-control/debug/deps/sdpa-e8e4f98dbeb389d9)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 6 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.66s
+== T8-k.log
+##### windchill3 guard (outside the cell)
+== before 2026-10-13T16:35:53Z
+0, NVIDIA GeForce RTX 3090, 00000000:41:00.0, 580.178.04
+1, NVIDIA GeForce RTX 3090, 00000000:42:00.0, 580.178.04
+2, Quadro K620, 00000000:61:00.0, 580.178.04
+/usr/local/cuda-12.6
+cell rc=0
+== after 2026-10-13T16:39:06Z
+0, NVIDIA GeForce RTX 3090, 00000000:41:00.0, 580.178.04
+1, NVIDIA GeForce RTX 3090, 00000000:42:00.0, 580.178.04
+2, Quadro K620, 00000000:61:00.0, 580.178.04
+/usr/local/cuda-12.6
