@@ -60,4 +60,19 @@ Newest entries last. Shas are verified from git.
 
 - GCP session: VM `fdb-lab-kg2-1` created 00:06:20Z, deleted 00:25:14Z;
   no lab VM remains.
-- Next: R-FK-VERIFY (Opus).
+- R-FK-VERIFY (Opus): APPROVE-WITH-FIXES; F1, F2 fixed (`review.md`).
+
+## State: QUALIFIED (2026-10-13)
+
+- **`K` = `853324fc2b9f813eedceb75bef660a06a413ff5b`** pins cudarc
+  **`C` = `b777f8d94eedca8334e9331cf520d554b22544b7`**. Commits after `K`
+  on this branch are class `D` only.
+- For FathomDB R-PIN (plan § 9): pin `C` and `K` with the identical URL
+  strings and full revs; receipts K-G1, K-G2 and K-G3 in
+  `qualification/`; R-FK-CODE and R-FK-VERIFY have no open finding.
+- Carry to FathomDB: the cc 75 x86 release build has no BF16 or F8 kernels
+  on any GPU (F2); W6 artifact smoke on a host with only `libcuda.so.1`
+  (F5); Slice 31 plan revision 14 (R-FK-PLAN M6); DK-1 and DK-3 todos;
+  DK-4 measurement method for D-14.
+- Remaining here: FK5 (K8, 0.10.4 on registry `cudarc-fathomdb` 0.19.10),
+  after the owner publishes `cudarc-fathomdb`.

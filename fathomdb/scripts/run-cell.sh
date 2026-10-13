@@ -88,6 +88,7 @@ for side in k control; do
   mkdir -p "$OUT/src-$side"
   git --git-dir="$REPO" archive "$sha" | tar -x -C "$OUT/src-$side" || die "git archive $sha failed"
   echo "$sha" > "$OUT/src-$side/.cell-sha"
+  echo "source $side: commit $sha tree $(git --git-dir="$REPO" rev-parse "$sha^{tree}")" >> "$OUT/host.txt"
 done
 
 CORE=(-p candle-core-fathomdb --features cuda)
@@ -110,6 +111,7 @@ done
 bin="$(newest_test_binary "$OUT/target-k/debug/deps" cuda_private_pool)"
 if [ -n "$bin" ]; then
   LD_DEBUG=files "$bin" > "$OUT/T1-ld-debug.log" 2>&1
+  printf 'T1-ld-debug\tk\t%s\n' "$?" >> "$SUMMARY"
   grep -oE 'file=[^ ;]*(libcuda|libcublas|libcublasLt|libcurand|libnvrtc)[^ ;]*' "$OUT/T1-ld-debug.log" \
     | sort -u > "$OUT/T1-loaded-libraries.txt"
 fi

@@ -49,7 +49,9 @@ commit under test and returns receipts; no code is written there. The
 receipt names the GPU, so a T4 or L4 result is never reported as an RTX 3090
 result. The VM installs only driver branch 580 (the `windchill3` branch;
 the GCP pilot installed 580.178.04, the `windchill3` version) and the CUDA
-13.0 toolkit (`cuda-toolkit-13-0`), so the cell answers the K-G2 question:
+13.0 toolkit packages Candle needs (`cuda-nvcc-13-0`, `cuda-cudart-dev-13-0`,
+`cuda-nvrtc-dev-13-0`, `cuda-cccl-13-0`, `libcublas-dev-13-0`,
+`libcurand-dev-13-0`; `scripts/vm-setup-cuda13.sh`), so the cell answers the K-G2 question:
 Candle built with the 13.0 toolkit runs on a 580 driver. The receipt records
 `nvidia-smi` and `nvcc --version`; a 580 point release other than 580.178.04
 is recorded, not hidden. The `859b8ea1` control runs in the same VM
@@ -60,7 +62,10 @@ Expected on sm_75 (T4, and the x86 release build at
 kernels are built only for sm_80 and later (`candle-kernels/src/fill.cu`,
 `#if __CUDA_ARCH__ >= 800`); the 2026-10-12 T4 build trial saw exactly this
 (FathomDB Slice 31 plan § 15 Q13). It must fail equally at the control.
-On an L4 (sm_89) it is expected to pass. The `__hmax_nan` guard in
+On an L4 (sm_89) it is expected to pass. Because the kernels are built for
+the one `CUDA_COMPUTE_CAP`, the BF16 and F8 kernels are absent from the
+cc 75 build on every GPU, so FathomDB's x86 release build must never use
+BF16 or F8 (R-FK-VERIFY F2). The `__hmax_nan` guard in
 `candle-kernels/src/compatibility.cuh:10` is true for a 13.0 build below
 sm_75, which 13.x cannot target, so it is not a risk here.
 
@@ -368,14 +373,18 @@ process. It uses only `candle_core` public API and the re-exported
 
 ### 5.3 Cells
 
-Environments (all cells also set `CUDA_DEVICE_ORDER=PCI_BUS_ID`):
+Environments (all cells also set `CUDA_DEVICE_ORDER=PCI_BUS_ID`; the
+runner sets `LD_LIBRARY_PATH` to the toolkit's `lib64` in every cell, so the
+libraries-opened rows reflect that search path; without it, the
+`windchill3` loader opens the same sonames from the 12.6 toolkit through
+the loader cache, per R-FK-VERIFY F4):
 
 | Cell | Environment |
 | --- | --- |
-| K-G1 | `PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=86 CUDA_VISIBLE_DEVICES=0` |
+| K-G1 | `PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda LD_LIBRARY_PATH=/usr/local/cuda/lib64 CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=86 CUDA_VISIBLE_DEVICES=0` |
 | K-G1 at 75 | the same with `CUDA_COMPUTE_CAP=75` (the FathomDB x86 release setting, `scripts/release/cuda-artifact-contract.sh:71` on `release/0.8.28`) |
 | K-G2 | `PATH=/usr/local/cuda-13.0/bin:$PATH CUDA_PATH=/usr/local/cuda-13.0 LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64 CUDARC_CUDA_VERSION=13000 CUDA_COMPUTE_CAP=75 CUDA_VISIBLE_DEVICES=0` (`CUDA_COMPUTE_CAP=89` on L4) |
-| K-G3 | `PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=87 CUDA_VISIBLE_DEVICES=0` (`/usr/local/cuda` is 12.6 on JetPack 6) |
+| K-G3 | `PATH=/usr/local/cuda/bin:$PATH CUDA_PATH=/usr/local/cuda LD_LIBRARY_PATH=/usr/local/cuda/lib64 CUDARC_CUDA_VERSION=12060 CUDA_COMPUTE_CAP=87 CUDA_VISIBLE_DEVICES=0` (`/usr/local/cuda` is 12.6 on JetPack 6) |
 
 | Run | Command | At `K` | At `859b8ea1` |
 | --- | --- | --- | --- |

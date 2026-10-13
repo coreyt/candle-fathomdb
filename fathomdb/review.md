@@ -81,3 +81,25 @@ Every review is an independent Opus subagent, read-only (plan § 8).
   dispositions judged fair.
 - N1 (wording of § 5.2 step 5 and CK-AC-02): fixed in the commit recording
   this review.
+
+## R-FK-VERIFY (FK3), 2026-10-13
+
+- Model: `opus` (Claude Opus), general-purpose, read-only; it reproduced
+  K-G1 at `853324fc` in its own extraction (T1 3/3, T3 297/0/0, CK-AC-01,
+  CK-AC-04; same test-binary hashes as the receipt) and checked every
+  receipt number against the evidence logs.
+- Reviewed: `K` = `853324fc`, tip `9a7a9afd`.
+- Verdict: APPROVE-WITH-FIXES; **`853324fc` is fit to pin.** No finding
+  touches code, so nothing is re-qualified (plan § 7). F1 and F2 fixed in
+  the commit recording this review.
+
+| Finding | Severity | Defect (short) | Disposition |
+| --- | --- | --- | --- |
+| F1 | Medium | CK-AC-06: `FATHOMDB.md` K7 and K7t rows named `FK2`, not commits | rows give `0d6fa138` and `d4ffdf58`, `853324fc` |
+| F2 | Low–Medium | K-G2 receipt said "never BF16 on Turing"; in fact the cc 75 build lacks the BF16 and F8 kernels on every GPU | K-G2 receipt and requirements § 2 reworded; carried to FathomDB R-PIN and D-11 |
+| F3 | Low | no log records the tested sha | runner writes commit and tree ids into `host.txt` for future cells; this round accepted on the reviewer's reproduction at `853324fc` |
+| F4 | Low | runner sets `LD_LIBRARY_PATH` in every cell, requirements only for K-G2; `LD_DEBUG` exit not recorded | requirements § 5.3 now matches the runner and notes the effect; runner records the `LD_DEBUG` exit |
+| F5 | Info | every host loaded the driver as unversioned `libcuda.so`; the `libcuda.so.1`-only case was not exercised | for FathomDB W6: artifact smoke on a host with only `libcuda.so.1` |
+| F6 | Info | K-G2 installed toolkit component packages, not `cuda-toolkit-13-0` | requirements § 2 names the packages |
+| F7 | Info | K-G2 control runs interleaved with K runs; receipt files dated by start date | none |
+| F8 | Info | `37bc0b4e`, `7e55a579` (FK0, before the trailer rule was applied to this fork) lack `Claude-Session` | none; `Fork-Class: D` parses |
