@@ -52,3 +52,18 @@ Every review is an independent Opus subagent, read-only (plan § 8).
 | L8 | `__hmax_nan` guard | noted as no risk for 13.x (§ 2) |
 | L9 | loaded CUDA library files not recorded | § 5.1 item 4 (`LD_DEBUG=files`) |
 | L10 | no candle-transformers row | T8 `cargo check` |
+
+## R-FK-CODE (FK2), 2026-10-12
+
+- Model: `opus` (Claude Opus), general-purpose, read-only; it re-ran RED at
+  `d4ffdf58` and GREEN at `0d6fa138` on RTX 3090 index 0, ran four
+  mutations, and checked CK-AC-01, CK-AC-03 and CK-AC-08 at `5572b27f`.
+- Verdict: APPROVE-WITH-FIXES (1 Medium, 4 Low).
+
+| Finding | Defect (short) | Disposition |
+| --- | --- | --- |
+| M1 | default pool checked only after the tensors are dropped; a transient default-pool allocation (mutation m4) passed | fixed at `853324fc` (`L`): default `USED_MEM_CURRENT` checked while the tensors are live and `USED_MEM_HIGH` unchanged at the end; m4 passed the old test and fails the new one at the `USED_MEM_HIGH` assertion; m1 fails; GREEN 3/3 |
+| L1 | the literal `Device::new_cuda(0)` mutation fails at the stream-context assertion, not `>= 16 MiB` | `requirements.md` CK-AC-02 and § 5.2 step 8 reworded |
+| L2 | SAFETY comment tied the default pool to the primary context | fixed at `853324fc` |
+| L3 | explicit `result::init()` redundant | kept: harmless, and the handles are read before any context exists |
+| L4 | `cargo fmt` differs in fork code (`device.rs:721`, K5; `aarch64_linux_cpu.rs:7`, K2); clippy `collapsible_match` at `npy.rs:121` (upstream) | not changed: CK-REQ-03 limits this line's delta to K7, its test and build fixes, and both diffs are formatting only in code published as 0.10.3; recorded for the next fork line |

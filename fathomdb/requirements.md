@@ -108,9 +108,12 @@ current pools untouched.
 in the new integration-test binary `candle-core/tests/cuda_private_pool.rs`
 (§ 5.2), RED at `859b8ea1` (compile failure: registry `cudarc ^0.19.4`,
 which resolves to 0.19.10 today, has no pool API) and GREEN at `K`, in
-K-G1 and K-G3 (k = 3 each) and in K-G2. R-FK-CODE runs a mutation check:
-with `Device::new_cuda(0)` in place of the pool-backed device, the test
-must fail at the `>= 16 MiB` assertion.
+K-G1 and K-G3 (k = 3 each) and in K-G2. R-FK-CODE runs mutation checks:
+with `Device::new_cuda(0)` in place of the pool-backed device the test must
+fail (at the stream-context assertion, or at `>= 16 MiB` when that assertion
+is removed); with a transient 8 MiB default-pool allocation while the
+private-pool tensors are live, it must fail at the default pool's
+`USED_MEM_HIGH` assertion.
 
 ### CK-REQ-03 Delta minimal [REQ31-06]
 
@@ -357,7 +360,8 @@ process. It uses only `candle_core` public API and the re-exported
    workspace, DK-4).
 7. Drop both tensors and synchronize. Assert `pool.used_current() == 0`.
 8. Assert the default and current pool handles equal step 3, and the
-   default pool's `USED_MEM_CURRENT` equals step 5.
+   default pool's `USED_MEM_CURRENT` (also checked while the tensors are
+   live, in step 6) and `USED_MEM_HIGH` equal their step 5 values.
 
 `cuMemGetInfo` is not used (it is not a release signal on Tegra).
 

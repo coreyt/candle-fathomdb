@@ -40,4 +40,11 @@ Newest entries last. Shas are verified from git.
   `candle-core/tests/aarch64_linux_cpu.rs:7` (K2); clippy 0.1.95
   `collapsible_match` at `candle-core/src/npy.rs:121` (upstream). The new
   test is clean under rustfmt and clippy `-D warnings`.
-- Next: R-FK-CODE (Opus).
+- R-FK-CODE (Opus): APPROVE-WITH-FIXES; M1 fixed test-first at
+  `853324fc` (`L`); see `review.md`.
+- Implementer note: one shared `CARGO_TARGET_DIR` reused a stale test
+  binary for mutated and real trees (same hash); those runs were discarded
+  and re-run after touching the source. Cells use one target directory
+  per tree (`scripts/run-cell.sh`).
+- Code commit to qualify: `K` = `853324fc2b9f813eedceb75bef660a06a413ff5b`.
+- Next: R-FK-CODE re-check of `853324fc`; FK3 cells.
