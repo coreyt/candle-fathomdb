@@ -2680,3 +2680,6 @@ unsafe fn gemm_strided_batched_bf16(
         sys::cublasGemmAlgo_t::CUBLAS_GEMM_DEFAULT_TENSOR_OP,
     )
 }
+
+#[cfg(test)]
+mod fathomdb_f32_admission;
