@@ -2531,13 +2531,14 @@ unsafe fn gemm_strided_batched_f32(
     let alpha = &cfg.gemm.alpha as *const f32 as *const _;
     let beta = &cfg.gemm.beta as *const f32 as *const _;
 
+    let call = cublas.admit()?;
     let stream = c.stream().clone();
     let (a, _guard_a) = a.device_ptr(&stream);
     let (b, _guard_b) = b.device_ptr(&stream);
     let (c, _guard_c) = c.device_ptr_mut(&stream);
 
     cudarc::cublas::result::gemm_strided_batched_ex(
-        *cublas.handle(),
+        call.handle()?,
         cfg.gemm.transa,
         cfg.gemm.transb,
         cfg.gemm.m,
