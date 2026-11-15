@@ -201,3 +201,14 @@ independent Opus subagents, as in the cudarc fork plan § 9, recorded in
 - **Upstream drift** (0.11.0 on cudarc 0.19.8, 67 commits; `main` on 0.19.10, 132 commits): DK-1, ruled stay on 0.10.2.
 - **Static CUDART regression** from a manifest change (CK-AC-04).
 - **Accidental upstream PR or push** (§ 1).
+
+## 11. Selected 0.8.29 lifetime follow-up
+
+The consumed K9 source at `182ceab0547348993b6dbec4b1aed610dcc8b23f` needs one
+F32 raw-GEMM checked lifetime boundary. Requirements, source fit, accepted design
+and scoped test intent are in [requirements.md](requirements.md#7-selected-0829-f32-lifetime-boundary).
+Qualify the cudarc borrowed guard first, then make the minimal Candle source
+change and qualify its affected path under an independently authorized owned
+build. Preserve numerical arguments, product outer admission, current published
+pins and the .30 actual-reset hold. Historical .28 cells above do not authorize
+new native execution, toolkit changes, publishing or unrelated maintenance.

@@ -415,3 +415,64 @@ Plan § 7 applies. A `fathomdb/`- or `FATHOMDB.md`-only commit needs nothing.
 | 2026-10-12 | DK-1: stay on the 0.10.2 base for 0.8.28. |
 | 2026-10-12 | K-G2 runs on a GCP VM (driver 580, CUDA 13.0 toolkit on the VM), not on `windchill3`; the `windchill3` CUDA 13.0 runfile is not downloaded. |
 | 2026-10-12 | Spot VMs are for test and verification only, never development. |
+
+## 7. Selected 0.8.29 F32 lifetime boundary
+
+This follow-up starts from exact consumed K9
+`182ceab0547348993b6dbec4b1aed610dcc8b23f` on
+`llm/0.8.29-candle-lifetime-20261115`. The cudarc companion's
+`fathomdb/library-lifetime-design.md` amendment at `49bca57` received independent
+Astra design ACCEPT. It selects one necessary lifetime repair, with cudarc
+qualification before consumption; it does not reopen the historical .28
+maintenance, release, toolkit, GPU or cloud cells above. Actual reset execution
+remains held for .30. No new survival or native qualification is claimed here.
+
+### Requirement and source fit
+
+The selected F32 helper `gemm_strided_batched_f32` in
+`candle-core/src/cuda_backend/mod.rs:2516-2564` prepares device pointers then
+calls raw `gemm_strided_batched_ex` using an unchecked BLAS handle. Pointer
+preparation can record a fallible native stream wait but still return pointers.
+An earlier infallible temporary Drop can also record native free/synchronize
+loss on the actual single-default-stream path (`CudaDevice::from_context`).
+The product's required outer110 lifetime lease spans construction, forward and
+unwind, but does not by itself recheck a loss discovered inside that epoch.
+The next raw library operation must refuse a cached terminal or delayed driver
+error before library dispatch.
+
+### Design and public contract
+
+Use the independently qualified cudarc borrowed `CudaBlasLease` boundary:
+`let call = cublas.admit()?` before any pointer guard; then `call.handle()?`
+immediately as the raw call's handle argument. The guard holds admission and
+binding, rechecks cached/delayed errors without native dispatch, and drops after
+all subsequently declared pointer guards on return/unwind. Preserve every raw
+GEMM argument: dimensions, strides, F32 datatype/scalars, selected compute type
+and `CUBLAS_GEMM_DEFAULT_TENSOR_OP`. Do not route through the generic Gemm trait,
+which would change the existing compute/algo choice. No Candle public API is
+added; the existing `CudaError::Cublas` conversion carries cudarc's exact
+Native/Driver error variants. Native allocation failure is not driver loss.
+
+Cudarc safe constructors separately admit BLAS/RNG creation and partial unwind;
+Candle still constructs both in its existing order. Product outer110 admission
+remains mandatory for the full model. Fathom pin adoption must update its old
+native-status tuple match/test constructors and classify Driver through its
+shared-loss policy. No dependency identity, version or registry pin is guessed
+in this source phase.
+
+### Test intent and qualification boundary
+
+Qualify cudarc guard behavior first with genuine semantic RED/GREEN: healthy
+native dispatch, unchanged native error, ordinary delayed OOM then retry,
+terminal native wait during pointer preparation, and actual default-stream
+temporary cleanup loss before a later call. Assert zero raw dispatch after
+known loss and normal pointer-guard unwind while admission remains held.
+Missing-method compilation is API preparation, never semantic RED.
+
+Candle's source change then requires its own focused test/compile route under a
+separately authorized owned build profile and the qualified dependency. Preserve
+exact F32 numerical arguments and demonstrate that a prior infallible cleanup
+error reaches the checked boundary. A source comparison alone is not a Candle
+runtime/compiled-artifact qualification; cudarc tests alone are not an installed
+Candle claim. Keep raw logs, normal commits and independent implementation review;
+no supplemental receipts or hash inventories are required by this follow-up.
