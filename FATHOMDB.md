@@ -13,6 +13,15 @@ go away.
   nor this file is inside a published crate.
 - **Licence and authorship:** unchanged from upstream (MIT OR Apache-2.0).
 
+## Current candidate
+
+The three renamed packages are unpublished `0.12.0` candidates, consuming
+`cudarc-fathomdb` `0.20.0`. The latter's candidate source is
+`343b04fa73f85ee78754d6ee2baa07b959cc9ccc`; its `src/` and `build.rs` are
+identical to qualified `cb36642fad90c1796693c36ee59e3d3d162f4410`.
+`candle-kernels` remains `0.10.2`. Candle qualification and publication remain
+separate; this preparation does not claim a published release.
+
 ## How to depend on it
 
 The packages are renamed; the library names are still `candle_core`,
@@ -20,7 +29,7 @@ The packages are renamed; the library names are still `candle_core`,
 
 ```toml
 [dependencies]
-candle-core = { package = "candle-core-fathomdb", version = "0.10.4" }
+candle-core = { package = "candle-core-fathomdb", version = "0.12.0" }
 ```
 
 `candle-kernels` is **not** renamed or published by the fork. The registry

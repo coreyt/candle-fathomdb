@@ -425,9 +425,12 @@ This follow-up starts from exact consumed K9
 Astra design ACCEPT. It selects one necessary lifetime repair, with cudarc
 qualification before consumption. The final qualified cudarc source input is
 `cb36642fad90c1796693c36ee59e3d3d162f4410`, including the exact Candle-feature
-closure and accepted source/CPU qualification. Owned Candle qualification uses
-that immutable local Git revision, not a moving path dependency. This is not a
-published dependency pin or a Candle runtime qualification. It does not reopen
+closure and accepted source/CPU qualification. The unpublished `0.20.0`
+candidate `343b04fa73f85ee78754d6ee2baa07b959cc9ccc` has identical `src/` and
+`build.rs`; owned qualification of the three `0.12.0` Candle candidates uses
+that immutable local Git revision, not a moving path dependency.
+`candle-kernels` remains `0.10.2`. This is not a published dependency pin or a
+Candle runtime qualification. It does not reopen
 the historical .28 maintenance, release, toolkit, GPU or cloud cells above. Actual reset execution
 remains held for .30. No new survival or native qualification is claimed here.
 
