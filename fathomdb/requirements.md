@@ -423,8 +423,12 @@ This follow-up starts from exact consumed K9
 `llm/0.8.29-candle-lifetime-20261115`. The cudarc companion's
 `fathomdb/library-lifetime-design.md` amendment at `49bca57` received independent
 Astra design ACCEPT. It selects one necessary lifetime repair, with cudarc
-qualification before consumption; it does not reopen the historical .28
-maintenance, release, toolkit, GPU or cloud cells above. Actual reset execution
+qualification before consumption. The final qualified cudarc source input is
+`cb36642fad90c1796693c36ee59e3d3d162f4410`, including the exact Candle-feature
+closure and accepted source/CPU qualification. Owned Candle qualification uses
+that immutable local Git revision, not a moving path dependency. This is not a
+published dependency pin or a Candle runtime qualification. It does not reopen
+the historical .28 maintenance, release, toolkit, GPU or cloud cells above. Actual reset execution
 remains held for .30. No new survival or native qualification is claimed here.
 
 ### Requirement and source fit
@@ -451,7 +455,9 @@ GEMM argument: dimensions, strides, F32 datatype/scalars, selected compute type
 and `CUBLAS_GEMM_DEFAULT_TENSOR_OP`. Do not route through the generic Gemm trait,
 which would change the existing compute/algo choice. No Candle public API is
 added; the existing `CudaError::Cublas` conversion carries cudarc's exact
-Native/Driver error variants. Native allocation failure is not driver loss.
+Native/Driver/Lost error variants; Lost retains the authoritative cached cause
+when the driver-status projection is synthetic. Native operation allocation
+failure remains retryable; actual native cleanup failure freezes the generation.
 
 Cudarc safe constructors separately admit BLAS/RNG creation and partial unwind;
 Candle still constructs both in its existing order. Product outer110 admission
