@@ -2,6 +2,7 @@ use super::{kernels, load_kernel_module};
 use cudarc::driver::{CudaContext, LaunchConfig, PushKernelArg};
 
 #[test]
+#[ignore = "requires an explicit exclusive CUDA lease and qualification artifacts"]
 fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<()> {
     assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));
     let w = crate::Error::wrap;
@@ -151,6 +152,7 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
 }
 
 #[test]
+#[ignore = "requires an explicit exclusive CUDA lease and qualification artifacts"]
 fn loadable_module_missing_requested_function_is_typed_not_found() -> crate::Result<()> {
     assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));
     let context = CudaContext::new(0).map_err(crate::Error::wrap)?;
@@ -167,6 +169,7 @@ fn loadable_module_missing_requested_function_is_typed_not_found() -> crate::Res
 }
 
 #[test]
+#[ignore = "requires an explicit exclusive CUDA lease and qualification artifacts"]
 fn sm90_only_image_is_typed_no_binary_on_selected_86_or_87_device() -> crate::Result<()> {
     assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));
     let image = std::env::var("FATHOMDB_TEST_SM90_CUBIN")

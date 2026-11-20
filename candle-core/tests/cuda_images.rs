@@ -6,6 +6,7 @@ use candle_core::cuda::kernels;
 use candle_core::{DType, Device, Tensor};
 
 #[test]
+#[ignore = "requires an explicit exclusive CUDA lease and qualification artifacts"]
 fn fill_f32_module_loads_and_executes_with_exact_output() -> candle_core::Result<()> {
     assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));
     let context = CudaContext::new(0).map_err(candle_core::Error::wrap)?;
@@ -45,6 +46,7 @@ fn fill_f32_module_loads_and_executes_with_exact_output() -> candle_core::Result
 }
 
 #[test]
+#[ignore = "requires an explicit exclusive CUDA lease and qualification artifacts"]
 fn f32_module_families_execute_authored_operations() -> candle_core::Result<()> {
     assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));
     let device = Device::new_cuda(0)?;

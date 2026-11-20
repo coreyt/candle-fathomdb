@@ -8,6 +8,7 @@ use candle_core::{DType, Device, Tensor};
 use std::sync::Arc;
 
 #[test]
+#[ignore = "requires an explicit exclusive CUDA lease and qualification artifacts"]
 fn healthy_last_tensor_clone_releases_context_and_final_private_pool_owner(
 ) -> candle_core::Result<()> {
     assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));

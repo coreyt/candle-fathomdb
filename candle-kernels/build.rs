@@ -1,9 +1,23 @@
-use cudaforge::{KernelBuilder, Result};
+use cudaforge::{CudaToolkit, KernelBuilder, Result};
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
 const CUTILE_FEATURE: &str = "CARGO_FEATURE_CUTILE";
+
+const FAMILIES: [&str; 11] = [
+    "affine",
+    "binary",
+    "cast",
+    "conv",
+    "fill",
+    "indexing",
+    "quantized",
+    "reduce",
+    "sort",
+    "ternary",
+    "unary",
+];
 
 fn main() -> Result<()> {
     println!("cargo::rerun-if-changed=build.rs");
@@ -18,6 +32,20 @@ fn main() -> Result<()> {
     // Build for PTX
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let ptx_path = out_dir.join("ptx.rs");
+    // Cargo tracks the shared headers above, but cudaforge's per-source cache
+    // does not. Recreate only this build's intermediates on every script run.
+    let work_dir = out_dir.join("kernel-build");
+    if work_dir.exists() {
+        std::fs::remove_dir_all(&work_dir)?;
+    }
+    std::fs::create_dir_all(&work_dir)?;
+    // PtxOutput::write emits paths rooted directly in OUT_DIR.
+    for family in FAMILIES {
+        let ptx = out_dir.join(format!("{family}.ptx"));
+        if ptx.exists() {
+            std::fs::remove_file(ptx)?;
+        }
+    }
     let bindings = KernelBuilder::new()
         .source_dir("src") // Scan src/ for .cu files
         .exclude(&["moe_*.cu", "mmvq_gguf.cu", "mmq_*.cu"]) // Exclude statically compiled kernels from ptx build
@@ -51,6 +79,7 @@ fn main() -> Result<()> {
     }
 
     let mut moe_builder = KernelBuilder::default()
+        .out_dir(&work_dir)
         .source_files(moe_sources)
         .arg("--expt-relaxed-constexpr")
         .arg("-std=c++17")
@@ -77,8 +106,8 @@ fn main() -> Result<()> {
         moe_builder = moe_builder.arg("-Xcompiler").arg("-fPIC");
     }
 
-    moe_builder.build_lib(out_dir.join("libmoe.a"))?;
-    println!("cargo:rustc-link-search={}", out_dir.display());
+    moe_builder.build_lib(work_dir.join("libmoe.a"))?;
+    println!("cargo:rustc-link-search={}", work_dir.display());
     println!("cargo:rustc-link-lib=moe");
     // A CUDA-capable Candle consumer must still map its module and execute the
     // CPU path on a host without a CUDA runtime. Dynamic libcudart makes the
@@ -114,19 +143,6 @@ fn build_images(out_dir: &Path) -> Result<()> {
         Ok("1") => true,
         _ => return Err(std::io::Error::other("CANDLE_CUDA_NATIVE must be 0 or 1").into()),
     };
-    let families = [
-        "affine",
-        "binary",
-        "cast",
-        "conv",
-        "fill",
-        "indexing",
-        "quantized",
-        "reduce",
-        "sort",
-        "ternary",
-        "unary",
-    ];
     let mut bindings = String::new();
     if enabled {
         let target = env::var("TARGET").unwrap_or_default();
@@ -146,11 +162,8 @@ fn build_images(out_dir: &Path) -> Result<()> {
             ))
             .into());
         }
-        let nvcc = env::var_os("NVCC")
-            .map(PathBuf::from)
-            .or_else(|| env::var_os("CUDA_PATH").map(|root| PathBuf::from(root).join("bin/nvcc")))
-            .unwrap_or_else(|| PathBuf::from("nvcc"));
-        for chunk in families.chunks(2) {
+        let nvcc = CudaToolkit::detect()?.nvcc_path;
+        for chunk in FAMILIES.chunks(2) {
             std::thread::scope(|scope| {
                 let jobs: Vec<_> = chunk
                     .iter()
@@ -205,7 +218,7 @@ fn build_images(out_dir: &Path) -> Result<()> {
             })?;
         }
     }
-    for family in families {
+    for family in FAMILIES {
         let name = family.to_uppercase();
         if enabled {
             bindings.push_str(&format!(
