@@ -171,3 +171,59 @@ status2/typed exact failure, healthy USED release and successful4MiB retry on
 SAME generation/token/allocator. Do not infer real-reset proof from CPU seams.
 Original expectedSIGSEGV history remains unexecuted; seq377 live faults remain
 HELD pending concrete reviewed productcommands/artifacts/actor/authority.
+
+## Observed native attribution refinement
+
+Actual Orin Fill: healthyPTX PASS, JIT-disabled owning module load RED101
+JIT_COMPILATION_DISABLED. Separate forcedPTX fails at prior cuBLAS construction
+ALLOC_FAILED, not Candle output. Preserve both failures. Extract the current
+private production module-load helper used by the ordinary Candle module cache;
+new owning unit tests call this SAME helper and launch seven selected existing
+kernels on cudarc buffers with authored exact values, without BLAS/model setup.
+Native disableJIT and forcedPTX can then qualify actual Candle route/symbol/
+readback independently. No test-only alternate loader or vendorBLAS repair.
+Existing Tensor/BGE/reranker default-dispatch numerical/adoption and final-owner
+controls remain selected. Direct Astra reviews this focused design delta before
+helper/image source edits; it is not another plan FIX cycle.
+
+
+## Registry identity correction
+
+Published trio0.12.0 at2ee39305 and cudarc0.20.0 at343b04fa are immutable.
+The core checkout's Slice60 registry-delivery correction supersedes this
+amendment's earlier unpublished-candidate wording. Proposed kernel package
+candle-kernels-fathomdb0.13.0 retains candle_kernels library name and requires
+parent successor disposition to historical product Slice31 Q2 before any
+registry write. Exact-version/ownership preflight and checksum-bound normalized
+package staging with an external no-root-patch CUDA consumer precede that
+disposition. Real public-registry proof remains OPEN; no publication here.
+
+
+## Implemented source coalescence and current limits
+
+The four consumed Candle directories were reconciled together against exact
+upstream0.11.1 source59f8e903ca80a32ea7f8514b39748fc979e69e82. Their common
+qualified code candidate is4eb768c62c1a57a00f4942e738f148a94fbcbddb on the
+owner's Slice60 core branch; this planning branch's HEAD is not a substitute
+kernel source pin. Root/standalone patches, HTTPS mirrors, locks and packaged
+core/nn aliases all name the renamed kernel0.13.0 at that same code commit.
+Actual owning implementation/rebuild tools and current full K1–K9/K7t inventory
+live at that candidate and its following D receipts. This branch retains the
+original182ceab0 kernel baseline and its planning history unchanged.
+
+The selected source retains complete static CUDART and exact cudaforge0.1.6
+header watch invalidation on both builders. Actual compiler-selection/header
+REDs and2/2 GREEN are retained; comment-only edits do not establish output-byte
+changes. Seven known-output F32 families actually ran both native-only and
+PTX-only in healthy3090/Orin sessions at0.1.5; selected x86 payload equivalence
+permits narrowly attributed preservation, not relabeling those runs0.1.6.
+Final0.1.6 normalized archives/consumer and installed Python A/B provide actual
+new inputs separately. Quantized/MoE/native75 inspection is not launched support.
+
+Current prospective native treatment remains a build candidate and product
+PTX default is preserved. Actual installed/startup/steady/build cost,
+corresponding Orin artifact qualification, held actual reset and public registry
+delivery must retain their real OPEN/PASS outcomes in final source status.
+Historical published0.12/0.20 and upstreamkernel0.10.2 are immutable different
+source, not proof of matching new CUDA registry consumers. No publication or
+fault permission is conveyed by this owning documentation.
