@@ -2,8 +2,11 @@ use cudaforge::{KernelBuilder, Result};
 use std::env;
 use std::path::PathBuf;
 
+const CUTILE_FEATURE: &str = "CARGO_FEATURE_CUTILE";
+
 fn main() -> Result<()> {
     println!("cargo::rerun-if-changed=build.rs");
+    println!("cargo::rerun-if-changed=src");
     println!("cargo::rerun-if-changed=src/compatibility.cuh");
     println!("cargo::rerun-if-changed=src/cuda_utils.cuh");
     println!("cargo::rerun-if-changed=src/binary_op_macros.cuh");
@@ -16,7 +19,7 @@ fn main() -> Result<()> {
     let ptx_path = out_dir.join("ptx.rs");
     let bindings = KernelBuilder::new()
         .source_dir("src") // Scan src/ for .cu files
-        .exclude(&["moe_*.cu"]) // Exclude moe kernels for ptx build
+        .exclude(&["moe_*.cu", "mmvq_gguf.cu", "mmq_*.cu"]) // Exclude statically compiled kernels from ptx build
         .arg("--expt-relaxed-constexpr")
         .arg("-std=c++17")
         .arg("-O3")
@@ -24,12 +27,29 @@ fn main() -> Result<()> {
 
     bindings.write(&ptx_path)?;
 
+    let mut moe_sources = vec![
+        "src/moe/moe_gguf.cu",
+        "src/moe/moe_wmma.cu",
+        "src/moe/moe_wmma_gguf.cu",
+        "src/mmvq_gguf.cu",
+        "src/mmq_gguf/mmq_quantize.cu",
+        "src/mmq_gguf/mmq_instance_q4_0.cu",
+        "src/mmq_gguf/mmq_instance_q4_1.cu",
+        "src/mmq_gguf/mmq_instance_q5_0.cu",
+        "src/mmq_gguf/mmq_instance_q5_1.cu",
+        "src/mmq_gguf/mmq_instance_q8_0.cu",
+        "src/mmq_gguf/mmq_instance_q2_k.cu",
+        "src/mmq_gguf/mmq_instance_q3_k.cu",
+        "src/mmq_gguf/mmq_instance_q4_k.cu",
+        "src/mmq_gguf/mmq_instance_q5_k.cu",
+        "src/mmq_gguf/mmq_instance_q6_k.cu",
+    ];
+    if env::var_os(CUTILE_FEATURE).is_some() {
+        moe_sources.push("src/moe/moe_align.cu");
+    }
+
     let mut moe_builder = KernelBuilder::default()
-        .source_files(vec![
-            "src/moe/moe_gguf.cu",
-            "src/moe/moe_wmma.cu",
-            "src/moe/moe_wmma_gguf.cu",
-        ])
+        .source_files(moe_sources)
         .arg("--expt-relaxed-constexpr")
         .arg("-std=c++17")
         .arg("-O3");

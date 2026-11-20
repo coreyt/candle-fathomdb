@@ -5,6 +5,8 @@ pub use cudarc;
 use cudarc::driver::CudaFunction;
 use float8::F8E4M3;
 use half::{bf16, f16};
+use std::any::{Any, TypeId};
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -25,6 +27,29 @@ impl DeviceId {
 
 struct CudaRng(cudarc::curand::CudaRng);
 unsafe impl Send for CudaRng {}
+
+const CUDA_GRAPH_HTOD_CACHE_MAX_BYTES: usize = 4096;
+
+type CudaGraphHtodCacheKey = (DeviceId, TypeId, Vec<u8>);
+type CudaGraphHtodCache = HashMap<CudaGraphHtodCacheKey, Box<dyn Any>>;
+
+thread_local! {
+    static CUDA_GRAPH_HTOD_CACHE: RefCell<CudaGraphHtodCache> =
+        RefCell::new(HashMap::new());
+    static CUDA_GRAPH_HTOD_CACHE_DEPTH: Cell<usize> = const { Cell::new(0) };
+}
+
+#[must_use]
+pub struct CudaGraphHtodCacheGuard;
+
+impl Drop for CudaGraphHtodCacheGuard {
+    fn drop(&mut self) {
+        CUDA_GRAPH_HTOD_CACHE_DEPTH.with(|depth| {
+            debug_assert!(depth.get() > 0);
+            depth.set(depth.get().saturating_sub(1));
+        });
+    }
+}
 
 pub struct ModuleStore {
     mdls: [Option<Arc<cudarc::driver::CudaModule>>; kernels::ALL_IDS.len()],
@@ -64,8 +89,13 @@ impl CudaDevice {
         self.stream.alloc_zeros::<T>(len).w()
     }
 
+    pub fn enable_cuda_graph_htod_cache(&self) -> CudaGraphHtodCacheGuard {
+        CUDA_GRAPH_HTOD_CACHE_DEPTH.with(|depth| depth.set(depth.get() + 1));
+        CudaGraphHtodCacheGuard
+    }
+
     pub fn memcpy_htod<
-        T: cudarc::driver::DeviceRepr,
+        T: cudarc::driver::DeviceRepr + 'static,
         Src: cudarc::driver::HostSlice<T> + ?Sized,
         Dst: cudarc::driver::DevicePtrMut<T>,
     >(
@@ -73,6 +103,9 @@ impl CudaDevice {
         src: &Src,
         dst: &mut Dst,
     ) -> Result<()> {
+        if cuda_graph_htod_cache_enabled() && !src.is_empty() {
+            return self.memcpy_htod_capture_cached(src, dst);
+        }
         self.stream.memcpy_htod(src, dst).w()
     }
 
@@ -80,6 +113,7 @@ impl CudaDevice {
         &self,
         src: &Src,
     ) -> Result<Vec<T>> {
+        self.check_capture_copy("clone_dtoh")?;
         self.stream.clone_dtoh(src).w()
     }
 
@@ -104,15 +138,115 @@ impl CudaDevice {
         src: &Src,
         dst: &mut Dst,
     ) -> Result<()> {
+        self.check_capture_copy("memcpy_dtoh")?;
         self.stream.memcpy_dtoh(src, dst).w()
     }
 
-    pub fn clone_htod<T: cudarc::driver::DeviceRepr, Src: cudarc::driver::HostSlice<T> + ?Sized>(
+    pub fn clone_htod<
+        T: cudarc::driver::DeviceRepr + 'static,
+        Src: cudarc::driver::HostSlice<T> + ?Sized,
+    >(
         &self,
         src: &Src,
     ) -> Result<cudarc::driver::CudaSlice<T>> {
+        if cuda_graph_htod_cache_enabled() && !src.is_empty() {
+            return self.clone_htod_capture_cached(src);
+        }
         self.stream.clone_htod(src).w()
     }
+
+    fn check_capture_copy(&self, op: &str) -> Result<()> {
+        if cuda_graph_htod_cache_enabled() {
+            let is_capturing = self.cuda_graph_capture_active();
+            if is_capturing {
+                crate::bail!(
+                    "{op} during CUDA graph capture: host/device copies are not \
+                     permitted while capturing (use param cache for kernel parameters)"
+                );
+            }
+        }
+        Ok(())
+    }
+
+    fn memcpy_htod_capture_cached<
+        T: cudarc::driver::DeviceRepr + 'static,
+        Src: cudarc::driver::HostSlice<T> + ?Sized,
+        Dst: cudarc::driver::DevicePtrMut<T>,
+    >(
+        &self,
+        src: &Src,
+        dst: &mut Dst,
+    ) -> Result<()> {
+        assert!(dst.len() >= src.len());
+        if let Some(cached) = self.cached_htod_slice(src)? {
+            return self.stream.memcpy_dtod(&cached, dst).w();
+        }
+        self.stream.memcpy_htod(src, dst).w()
+    }
+
+    fn clone_htod_capture_cached<
+        T: cudarc::driver::DeviceRepr + 'static,
+        Src: cudarc::driver::HostSlice<T> + ?Sized,
+    >(
+        &self,
+        src: &Src,
+    ) -> Result<cudarc::driver::CudaSlice<T>> {
+        if let Some(cached) = self.cached_htod_slice(src)? {
+            return Ok(cached);
+        }
+        self.stream.clone_htod(src).w()
+    }
+
+    fn cached_htod_slice<
+        T: cudarc::driver::DeviceRepr + 'static,
+        Src: cudarc::driver::HostSlice<T> + ?Sized,
+    >(
+        &self,
+        src: &Src,
+    ) -> Result<Option<cudarc::driver::CudaSlice<T>>> {
+        let (src_slice, _sync) = unsafe { src.stream_synced_slice(&self.stream) };
+        let byte_len = std::mem::size_of_val(src_slice);
+        if byte_len > CUDA_GRAPH_HTOD_CACHE_MAX_BYTES {
+            if self.cuda_graph_capture_active() {
+                crate::bail!("CUDA graph capture cannot upload uncached host data");
+            }
+            return Ok(None);
+        }
+
+        let bytes =
+            unsafe { std::slice::from_raw_parts(src_slice.as_ptr().cast::<u8>(), byte_len) }
+                .to_vec();
+        let key = (self.id, TypeId::of::<T>(), bytes);
+        if let Some(cached) = CUDA_GRAPH_HTOD_CACHE.with(|cache| {
+            cache.borrow().get(&key).and_then(|cached| {
+                cached
+                    .downcast_ref::<cudarc::driver::CudaSlice<T>>()
+                    .cloned()
+            })
+        }) {
+            return Ok(Some(cached));
+        }
+        if self.cuda_graph_capture_active() {
+            crate::bail!("CUDA graph capture missing cached host data");
+        }
+
+        let cached = self.stream.clone_htod(src).w()?;
+        CUDA_GRAPH_HTOD_CACHE.with(|cache| {
+            cache.borrow_mut().insert(key, Box::new(cached.clone()));
+        });
+        Ok(Some(cached))
+    }
+
+    fn cuda_graph_capture_active(&self) -> bool {
+        matches!(
+            self.stream.capture_status(),
+            Ok(status) if status != cudarc::driver::sys::CUstreamCaptureStatus::CU_STREAM_CAPTURE_STATUS_NONE
+        )
+    }
+}
+
+pub(crate) fn cuda_graph_htod_cache_enabled() -> bool {
+    CUDA_GRAPH_HTOD_CACHE_DEPTH.with(|depth| depth.get() > 0)
 }
 
 pub struct CudaFunc {
@@ -173,28 +307,6 @@ impl CudaDevice {
         self.context.is_event_tracking()
     }
 
-    #[cfg(all(feature = "ug", not(target_arch = "wasm32")))]
-    pub fn compile(
-        &self,
-        func_name: &'static str,
-        kernel: candle_ug::lang::ssa::Kernel,
-    ) -> Result<CudaFunc> {
-        let mut buf = vec![];
-        candle_ug::cuda::code_gen::gen(&mut buf, func_name, &kernel)?;
-        let cuda_code = String::from_utf8(buf)?;
-        let opts = cudarc::nvrtc::CompileOptions {
-            use_fast_math: Some(true),
-            ..Default::default()
-        };
-        let ptx = cudarc::nvrtc::safe::compile_ptx_with_opts(cuda_code, opts).w()?;
-        let module = self.context.load_module(ptx).w()?;
-        let func = module.load_function(func_name).w()?;
-        Ok(CudaFunc {
-            func,
-            stream: self.stream.clone(),
-        })
-    }
-
     pub fn id(&self) -> DeviceId {
         self.id
     }
@@ -235,7 +347,7 @@ impl CudaDevice {
         }
         drop(ms);
         let mut ms = self.modules.write().unwrap();
-        let cuda_module = self.context.load_module(mdl.ptx().into()).w()?;
+        let cuda_module = load_kernel_module(&self.context, mdl)?;
         ms.mdls[mdl.index()] = Some(cuda_module.clone());
         let func = cuda_module.load_function(fn_name).w()?;
         Ok(CudaFunc {
@@ -247,6 +359,13 @@ impl CudaDevice {
     pub fn cublas_handle(&self) -> Arc<cudarc::cublas::CudaBlas> {
         self.blas.clone()
     }
+}
+
+fn load_kernel_module(
+    context: &Arc<cudarc::driver::CudaContext>,
+    module: &kernels::Module,
+) -> Result<Arc<cudarc::driver::CudaModule>> {
+    context.load_module(module.ptx().into()).w()
 }
 
 impl CudaDevice {
@@ -721,10 +840,17 @@ mod from_context_tests {
         let context = cudarc::driver::CudaContext::new(0).unwrap();
         let device = CudaDevice::from_context(context.clone()).unwrap();
         assert!(Arc::ptr_eq(device.cuda_stream().context(), &context));
-        assert_eq!(device.cuda_stream().cu_stream(), context.default_stream().cu_stream());
+        assert_eq!(
+            device.cuda_stream().cu_stream(),
+            context.default_stream().cu_stream()
+        );
         let other = CudaDevice::new(0).unwrap();
         assert!(!device.same_device(&other), "each device keeps its own id");
         let t = crate::Tensor::new(&[1f32, 2., 3.], &crate::Device::Cuda(device)).unwrap();
         assert_eq!(t.sum_all().unwrap().to_scalar::<f32>().unwrap(), 6.);
     }
 }
+
+#[cfg(test)]
+#[path = "fathomdb_images.rs"]
+mod image_tests;

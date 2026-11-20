@@ -7,7 +7,13 @@
 
 // FIXME: the minimum compute capabilities are just guesses since the table is not specific enough
 
-#if (__CUDACC_VER_MAJOR__ < 12 || __CUDACC_VER_MINOR__ < 2) && __CUDA_ARCH__ < 750
+// CUDA >= 12.2 defines __hmax_nan/__hmin_nan for every arch (emulating on
+// pre-sm_80 via NV_IF_ELSE_TARGET). CUDA < 12.2 only declare them for
+// __CUDA_ARCH__ >= 800. Shim only when the toolkit genuinely lacks them.
+// Testing arch alone redefines them on 12.2+ (sm_75), testing the minor
+// version alone misfires on 13.0/13.1.
+#define CANDLE_CUDA_VERSION (__CUDACC_VER_MAJOR__ * 1000 + __CUDACC_VER_MINOR__ * 10)
+#if CANDLE_CUDA_VERSION < 12020 && __CUDA_ARCH__ < 800
 __device__ __forceinline__ __half __hmax_nan(__half a, __half b) {
     return __hisnan(a) ? a : (__hisnan(b) ? b : __hmax(a, b));
 }
@@ -48,7 +54,7 @@ __device__ double atomicAdd(double* address, double val) {
    //      assumed = old;
    //      unsigned int hsum;
    //      hsum = unaligned ? (old >> 16) : (old & 0xffff);
-   //      hsum = __half_as_ushort(__ushort_as_half(hsum) + val); 
+   //      hsum = __half_as_ushort(__ushort_as_half(hsum) + val);
    //      old = atomicCAS(address_as_ui, assumed,
    //          unaligned ? (old & 0xffff) | (hsum << 16) : (old & 0xffff0000) | hsum
    //      );
@@ -71,7 +77,7 @@ __device__ __forceinline__ __half atomicMaxf(__half* address, __half val) {
         assumed = old;
         unsigned int hmax;
         hmax = unaligned ? (old >> 16) : (old & 0xffff);
-        hmax = __half_as_ushort(__hmax_nan(val, __ushort_as_half(hmax))); 
+        hmax = __half_as_ushort(__hmax_nan(val, __ushort_as_half(hmax)));
         old = atomicCAS(address_as_ui, assumed,
             unaligned ? (old & 0xffff) | (hmax << 16) : (old & 0xffff0000) | hmax
         );
@@ -96,7 +102,7 @@ __device__ __forceinline__ __half atomicMaxf(__half* address, __half val) {
 // solution copied https://stackoverflow.com/questions/17399119/how-do-i-use-atomicmax-on-floating-point-values-in-cuda
 __device__ __forceinline__ float atomicMaxf(float * addr, float value) {
     if (signbit(value)) {
-        return __uint_as_float(atomicMin((unsigned int *)addr, __float_as_uint(value)));        
+        return __uint_as_float(atomicMin((unsigned int *)addr, __float_as_uint(value)));
     } else {
         return __int_as_float(atomicMax((int *)addr, __float_as_int(value)));
     }
@@ -123,7 +129,7 @@ __device__ __forceinline__ __half atomicMinf(__half* address, __half val) {
         assumed = old;
         unsigned int hmin;
         hmin = unaligned ? (old >> 16) : (old & 0xffff);
-        hmin = __half_as_ushort(__hmin_nan(val, __ushort_as_half(hmin))); 
+        hmin = __half_as_ushort(__hmin_nan(val, __ushort_as_half(hmin)));
         old = atomicCAS(address_as_ui, assumed,
             unaligned ? (old & 0xffff) | (hmin << 16) : (old & 0xffff0000) | hmin
         );

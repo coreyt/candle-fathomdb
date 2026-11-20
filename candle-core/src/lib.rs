@@ -71,6 +71,7 @@ pub mod layout;
 pub mod metal_backend;
 #[cfg(feature = "mkl")]
 mod mkl;
+pub mod nditer;
 pub mod npy;
 pub mod op;
 pub mod pickle;
@@ -90,10 +91,10 @@ mod variable;
 
 #[cfg(feature = "cudnn")]
 pub use cuda_backend::cudnn;
+#[cfg(feature = "cutile")]
+pub use cuda_backend::cutile;
 
 pub use cpu_backend::{CpuStorage, CpuStorageRef};
-#[cfg(feature = "ug")]
-pub use custom_op::UgIOp1;
 pub use custom_op::{CustomOp1, CustomOp2, CustomOp3, InplaceOp1, InplaceOp2, InplaceOp3};
 pub use device::{Device, DeviceLocation, NdArray};
 pub use dtype::{DType, DTypeParseError, FloatDType, IntDType, WithDType};
@@ -101,8 +102,9 @@ pub use dummy_dtype::{F4, F6E2M3, F6E3M2, F8E8M0};
 pub use error::{Context, Error, Result};
 pub use indexer::{IndexOp, TensorIndexer};
 pub use layout::Layout;
+pub use nditer::NdIter;
 pub use shape::{Shape, D};
-pub use storage::Storage;
+pub use storage::{Storage, StorageMutRef, StorageRef};
 pub use streaming::{StreamTensor, StreamingBinOp, StreamingModule};
 pub use strided_index::{StridedBlocks, StridedIndex};
 pub use tensor::{Tensor, TensorId};
@@ -164,7 +166,7 @@ impl<M: Module> Module for Option<&M> {
     }
 }
 
-/// A single forward method using a single single tensor argument and a flag to
+/// A single forward method using a single tensor argument and a flag to
 /// separate the training and evaluation behaviors.
 pub trait ModuleT {
     fn forward_t(&self, xs: &Tensor, train: bool) -> Result<Tensor>;

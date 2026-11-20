@@ -8,7 +8,7 @@
 //!  - Text to image models: [`stable_diffusion`] and [`wuerstchen`], ...
 //!  - Audio models: [`whisper`], [`encodec`], [`metavoice`], [`parler_tts`], ...
 //!  - Computer vision models: [`dinov2`], [`convmixer`], [`efficientnet`], ...
-//!  
+//!
 //! Some of the models also have quantized variants, e.g.  [`quantized_blip`], [`quantized_llama`] and  [`quantized_qwen2`].
 //!
 //! The implementations aim to be readable while maintaining good performance. For more information
@@ -45,6 +45,7 @@ pub mod flux;
 pub mod gemma;
 pub mod gemma2;
 pub mod gemma3;
+pub mod gemma4;
 pub mod glm4;
 pub mod glm4_new;
 pub mod granite;
@@ -52,6 +53,7 @@ pub mod granitemoehybrid;
 pub mod helium;
 pub mod hiera;
 pub mod jina_bert;
+pub mod lfm2;
 pub mod llama;
 pub mod llama2_c;
 pub mod llama2_c_weights;

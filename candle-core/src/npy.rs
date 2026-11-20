@@ -117,11 +117,9 @@ impl Header {
             match c {
                 '(' => cnt_parenthesis += 1,
                 ')' => cnt_parenthesis -= 1,
-                ',' => {
-                    if cnt_parenthesis == 0 {
-                        parts.push(header[start_index..index].to_owned());
-                        start_index = index + 1;
-                    }
+                ',' if cnt_parenthesis == 0 => {
+                    parts.push(header[start_index..index].to_owned());
+                    start_index = index + 1;
                 }
                 _ => {}
             }
@@ -288,8 +286,8 @@ impl Tensor {
         for i in 0..zip.len() {
             let mut reader = zip.by_index(i)?;
             let name = {
-                let name = reader.name();
-                name.strip_suffix(NPY_SUFFIX).unwrap_or(name).to_owned()
+                let name = reader.name()?;
+                name.strip_suffix(NPY_SUFFIX).unwrap_or(&name).to_owned()
             };
             let header = read_header(&mut reader)?;
             let header = Header::parse(&header)?;
@@ -385,8 +383,8 @@ impl NpzTensors {
         for i in 0..zip.len() {
             let file = zip.by_index(i)?;
             let name = {
-                let name = file.name();
-                name.strip_suffix(NPY_SUFFIX).unwrap_or(name).to_owned()
+                let name = file.name()?;
+                name.strip_suffix(NPY_SUFFIX).unwrap_or(&name).to_owned()
             };
             index_per_name.insert(name, i);
         }
