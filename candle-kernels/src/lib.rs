@@ -2,6 +2,10 @@ mod ptx {
     include!(concat!(env!("OUT_DIR"), "/ptx.rs"));
 }
 
+mod images {
+    include!(concat!(env!("OUT_DIR"), "/images.rs"));
+}
+
 #[repr(u32)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Id {
@@ -35,6 +39,7 @@ pub const ALL_IDS: [Id; 11] = [
 pub struct Module {
     index: usize,
     ptx: &'static str,
+    image: Option<&'static [u8]>,
 }
 
 impl Module {
@@ -44,6 +49,12 @@ impl Module {
 
     pub fn ptx(&self) -> &'static str {
         self.ptx
+    }
+
+    /// Returns the optional compiled native images with PTX fallback for this
+    /// module. A PTX-only build returns `None`; callers then use [`Self::ptx`].
+    pub fn image(&self) -> Option<&'static [u8]> {
+        self.image
     }
 }
 
@@ -63,6 +74,7 @@ macro_rules! mdl {
         pub const $cst: Module = Module {
             index: module_index(Id::$id),
             ptx: ptx::$cst,
+            image: images::$cst,
         };
     };
 }

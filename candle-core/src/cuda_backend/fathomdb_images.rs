@@ -30,8 +30,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
     // types, live owning buffers and bounds; each result is copied back before
     // the buffers are reused or dropped.
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&mut output)
             .arg(&one)
             .arg(&n)
@@ -44,8 +44,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
     let function = load("affine_f32", &kernels::AFFINE)?;
     let two = 2_f32;
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&n)
             .arg(&dims)
             .arg(&info)
@@ -62,8 +62,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
     let function = load("badd_f32", &kernels::BINARY)?;
     let reverse = stream.clone_htod(&[4_f32, 3., 2., 1.]).map_err(w)?;
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&n)
             .arg(&dims)
             .arg(&info)
@@ -79,8 +79,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
     let function = load("cast_u32_f32", &kernels::CAST)?;
     let integers = stream.clone_htod(&[1_u32, 2, 3, 4]).map_err(w)?;
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&n)
             .arg(&dims)
             .arg(&info)
@@ -98,8 +98,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
     let count = 2_usize;
     let width = 1_usize;
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&count)
             .arg(&dims)
             .arg(&info)
@@ -119,8 +119,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
     let function = load("fast_sum_f32", &kernels::REDUCE)?;
     let mut sum = stream.alloc_zeros::<f32>(1).map_err(w)?;
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&n)
             .arg(&n)
             .arg(&dims)
@@ -135,8 +135,8 @@ fn owning_loader_executes_seven_authored_f32_kernel_results() -> crate::Result<(
 
     let function = load("usqr_f32", &kernels::UNARY)?;
     unsafe {
-        function
-            .builder()
+        stream
+            .launch_builder(&function)
             .arg(&n)
             .arg(&dims)
             .arg(&info)
@@ -163,5 +163,27 @@ fn loadable_module_missing_requested_function_is_typed_not_found() -> crate::Res
         "owning-image-control missing-symbol-status={}",
         error.0 as u32
     );
+    Ok(())
+}
+
+#[test]
+fn sm90_only_image_is_typed_no_binary_on_selected_86_or_87_device() -> crate::Result<()> {
+    assert_eq!(std::env::var("FATHOMDB_REQUIRE_LIVE").as_deref(), Ok("1"));
+    let image = std::env::var("FATHOMDB_TEST_SM90_CUBIN")
+        .expect("compile the committed sm90_only.cu fixture with CUDA12.6 --cubin -arch=sm_90");
+    let context = CudaContext::new(0).map_err(crate::Error::wrap)?;
+    use cudarc::driver::sys::{CUdevice_attribute, CUresult};
+    let major = context
+        .attribute(CUdevice_attribute::CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR)
+        .map_err(crate::Error::wrap)?;
+    let minor = context
+        .attribute(CUdevice_attribute::CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR)
+        .map_err(crate::Error::wrap)?;
+    assert!(matches!((major, minor), (8, 6) | (8, 7)));
+    let error = context
+        .load_module(cudarc::nvrtc::Ptx::from_file(image))
+        .unwrap_err();
+    assert_eq!(error.0, CUresult::CUDA_ERROR_NO_BINARY_FOR_GPU);
+    println!("owning-image-control wrong-image-status={}", error.0 as u32);
     Ok(())
 }

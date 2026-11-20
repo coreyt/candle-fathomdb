@@ -365,7 +365,11 @@ fn load_kernel_module(
     context: &Arc<cudarc::driver::CudaContext>,
     module: &kernels::Module,
 ) -> Result<Arc<cudarc::driver::CudaModule>> {
-    context.load_module(module.ptx().into()).w()
+    let image = match module.image() {
+        Some(bytes) => cudarc::nvrtc::Ptx::from_binary(bytes.to_vec()),
+        None => module.ptx().into(),
+    };
+    context.load_module(image).w()
 }
 
 impl CudaDevice {

@@ -1,6 +1,7 @@
 use cudaforge::{KernelBuilder, Result};
 use std::env;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
 const CUTILE_FEATURE: &str = "CARGO_FEATURE_CUTILE";
 
@@ -26,6 +27,7 @@ fn main() -> Result<()> {
         .build_ptx()?;
 
     bindings.write(&ptx_path)?;
+    build_images(&out_dir)?;
 
     let mut moe_sources = vec![
         "src/moe/moe_gguf.cu",
@@ -102,5 +104,118 @@ fn main() -> Result<()> {
     if !is_target_msvc {
         println!("cargo:rustc-link-lib=stdc++");
     }
+    Ok(())
+}
+
+fn build_images(out_dir: &Path) -> Result<()> {
+    println!("cargo::rerun-if-env-changed=CANDLE_CUDA_NATIVE");
+    let enabled = match env::var("CANDLE_CUDA_NATIVE").as_deref() {
+        Err(env::VarError::NotPresent) | Ok("0") => false,
+        Ok("1") => true,
+        _ => return Err(std::io::Error::other("CANDLE_CUDA_NATIVE must be 0 or 1").into()),
+    };
+    let families = [
+        "affine",
+        "binary",
+        "cast",
+        "conv",
+        "fill",
+        "indexing",
+        "quantized",
+        "reduce",
+        "sort",
+        "ternary",
+        "unary",
+    ];
+    let mut bindings = String::new();
+    if enabled {
+        let target = env::var("TARGET").unwrap_or_default();
+        let (floor, native): (&str, &[&str]) = if target == "x86_64-unknown-linux-gnu" {
+            ("75", &["75", "86"])
+        } else if target == "aarch64-unknown-linux-gnu" {
+            ("87", &["87"])
+        } else {
+            return Err(std::io::Error::other(
+                "native images qualify only Linux x86_64 and Tegra AArch64 targets",
+            )
+            .into());
+        };
+        if env::var("CUDA_COMPUTE_CAP").as_deref() != Ok(floor) {
+            return Err(std::io::Error::other(format!(
+                "native image target requires explicit CUDA_COMPUTE_CAP={floor}"
+            ))
+            .into());
+        }
+        let nvcc = env::var_os("NVCC")
+            .map(PathBuf::from)
+            .or_else(|| env::var_os("CUDA_PATH").map(|root| PathBuf::from(root).join("bin/nvcc")))
+            .unwrap_or_else(|| PathBuf::from("nvcc"));
+        for chunk in families.chunks(2) {
+            std::thread::scope(|scope| {
+                let jobs: Vec<_> = chunk
+                    .iter()
+                    .map(|family| {
+                        let nvcc = &nvcc;
+                        scope.spawn(move || -> Result<()> {
+                            let output = out_dir.join(format!("{family}.fatbin"));
+                            let mut command = Command::new(nvcc);
+                            command.args([
+                                "--fatbin",
+                                "--expt-relaxed-constexpr",
+                                "-std=c++17",
+                                "-O3",
+                                "--default-stream",
+                                "per-thread",
+                            ]);
+                            for arch in native {
+                                command.arg(format!(
+                                    "--generate-code=arch=compute_{arch},code=sm_{arch}"
+                                ));
+                            }
+                            command.arg(format!(
+                                "--generate-code=arch=compute_{floor},code=compute_{floor}"
+                            ));
+                            if let Some(ccbin) = env::var_os("NVCC_CCBIN") {
+                                command
+                                    .arg("-allow-unsupported-compiler")
+                                    .arg("-ccbin")
+                                    .arg(ccbin);
+                            }
+                            let status = command
+                                .arg(format!("src/{family}.cu"))
+                                .arg("-o")
+                                .arg(&output)
+                                .status()?;
+                            if !status.success() {
+                                return Err(std::io::Error::other(format!(
+                                    "native image compilation failed for {family}: {status}"
+                                ))
+                                .into());
+                            }
+                            Ok(())
+                        })
+                    })
+                    .collect();
+                for job in jobs {
+                    job.join().map_err(|_| {
+                        std::io::Error::other("native image compiler thread panicked")
+                    })??;
+                }
+                Ok::<_, cudaforge::Error>(())
+            })?;
+        }
+    }
+    for family in families {
+        let name = family.to_uppercase();
+        if enabled {
+            bindings.push_str(&format!(
+                "pub const {name}: Option<&[u8]> = Some(include_bytes!({:?}));\n",
+                out_dir.join(format!("{family}.fatbin"))
+            ));
+        } else {
+            bindings.push_str(&format!("pub const {name}: Option<&[u8]> = None;\n"));
+        }
+    }
+    std::fs::write(out_dir.join("images.rs"), bindings)?;
     Ok(())
 }
