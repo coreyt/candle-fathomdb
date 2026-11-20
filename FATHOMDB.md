@@ -1,67 +1,66 @@
 # candle-fathomdb: differences from upstream Candle
 
-`candle-core-fathomdb`, `candle-nn-fathomdb` and `candle-transformers-fathomdb`
-are FathomDB's fork of [Candle](https://github.com/huggingface/candle). They
-are not the upstream crates. This file lists everything the fork changes, so
-that a consumer can see what differs from upstream and when each change can
-go away.
+This is FathomDB's fork of [Candle](https://github.com/huggingface/candle),
+not the upstream crates. The selected source is published Candle0.11.1 commit
+`59f8e903ca80a32ea7f8514b39748fc979e69e82`. Upstream main is comparison only.
+Licence/authorship remain MIT OR Apache-2.0 with original attribution.
+The owner repository is [coreyt/candle-fathomdb](https://github.com/coreyt/candle-fathomdb).
+Owning requirements/design/tests/results live in `fathomdb/slice60.md`;
+that directory and this inventory are not packaged.
 
-- **Base:** upstream tag `0.10.2`, commit `7c7a8c57`.
-- **Source:** [coreyt/candle-fathomdb](https://github.com/coreyt/candle-fathomdb),
-  branch `fathomdb/0.8.28-cudarc-fork`. The plan, requirements and status
-  records are in that branch's `fathomdb/` directory. Neither that directory
-  nor this file is inside a published crate.
-- **Licence and authorship:** unchanged from upstream (MIT OR Apache-2.0).
+## Current candidate and delivery
 
-## Current candidate
-
-The three renamed packages are unpublished `0.12.0` candidates, consuming
-`cudarc-fathomdb` `0.20.0`. The latter's candidate source is
-`343b04fa73f85ee78754d6ee2baa07b959cc9ccc`; its `src/` and `build.rs` are
-identical to qualified `cb36642fad90c1796693c36ee59e3d3d162f4410`.
-`candle-kernels` remains `0.10.2`. Candle qualification and publication remain
-separate; this preparation does not claim a published release.
-
-## How to depend on it
-
-The packages are renamed; the library names are still `candle_core`,
-`candle_nn` and `candle_transformers`:
+Candle core/nn/transformers and the renamed kernel package are0.13.0
+candidates; Rust library names remain `candle_core`, `candle_nn`,
+`candle_transformers`, `candle_kernels`. They use exact cudarc-fathomdb0.21.0.
+Old registry trio0.12.0 at2ee39305 and cudarc0.20.0 at343b04fa are already
+published and immutable. New versions are not published by this preparation.
+Historical product Slice31 Q2 kept kernels Git-only; a successor registry
+kernel identity requires the parent's concrete owner disposition. Exact Git
+qualification, normalized-package staging and public-registry proof are
+separate. Root patches do not propagate to downstream workspaces.
 
 ```toml
 [dependencies]
-candle-core = { package = "candle-core-fathomdb", version = "0.12.0" }
+candle-core = { package = "candle-core-fathomdb", version = "=0.13.0" }
 ```
 
-`candle-kernels` is **not** renamed or published by the fork. The registry
-crates depend on upstream `candle-kernels` 0.10.2, which links
-`libcudart.so` dynamically. Items K4 and K6 reach a build only when the
-workspace patches `candle-kernels` to this fork's git source, as FathomDB
-does.
+## Retained delta inventory
 
-## Items
+Classes: U upstream-shaped code, L local code, P packaging, D owning docs.
+Comparisons below use selected upstream0.11.1; old qualification subjects retain
+only their original scope. No upstream writes or proposals are commissioned.
 
-Class: `U` upstream-shaped code, proposable upstream; `L` local-only code;
-`P` packaging. Upstream status checked on 2026-10-12 against tag `0.11.0`
-(`31f35b14`) and `main` (`c68b2499`).
+| Delta | Current disposition and reason | Class | Removal condition |
+| --- | --- | --- | --- |
+| K1 | Retain renamed trio/library identities, three-member workspace and empty defaults; upstream packages are different identities. | P | All other required fork deltas become upstream or unnecessary. |
+| K2 | Retain Linux AArch64 gemm without F16 plus typed unsupported CPU F16 matmul; upstream NEON changes do not prove baseline fullfp16 safety. | L | Runtime-safe upstream F16 selection or retirement of this CPU baseline. |
+| K3 | Retain cudarc dynamic-loading; upstream0.11.1 still selects dynamic-linking. | L | Upstream driverless lazy loading satisfies the actual installed contract. |
+| K4 | Retain whole-archive cudart_static, dl/rt/pthread/stdC++ and CUDA_PATH target library search. Renamed kernel package owns these bytes. | L | Upstream meets complete static-linkage and driverless runtime proof. |
+| K5 | Retain public existing-context constructors and default-stream semantics; upstream constructor remains private. | U | Public upstream existing-context API preserves caller allocator/lifetime semantics. |
+| K6 | Retain CUDA_PATH/source/header/switch reruns, shared CudaToolkit compiler discovery and exact cudaforge0.1.6 with src watches on PTX AND static builders. | U/L | Upstream implements the complete selected build-input contract. |
+| K7 | Retain exact cudarc-fathomdb0.21 edge and unchanged selected implementation features; pool primitives do not depend on the removed no-op marker. Upstream ug is removed. | P | Upstream provides the required pool and tracked-lifetime contracts. |
+| K7t | Retain actual private-pool isolation/accounting test; add bounded OOM retry and distinct final tensor/context/pool ownership witnesses. | L | K7 is no longer needed and equivalent owning qualification exists upstream. |
+| K8 | Fresh0.13 cohort with exact dependency edges replaces immutable old0.12 registry assumptions; no publication claim. | P | Coherent matching delivery is superseded or fork identity retired. |
+| K9 | Kernel and trio use one qualified source cohort instead of old182ceab0 kernel bytes with newer trio. Independent root/archive/SDK/package graphs must prove identity. | P | A fully equivalent upstream dependency graph needs no fork kernel. |
+| .29 F32 | Retain checked borrowed BLAS admission before pointer guards and checked handle before unchanged F32 GEMM arguments. | L | Equivalent upstream loss/provenance/cleanup behavior is independently proved. |
+| Native candidate | Optional image bytes and the ordinary production cache loader add bounded SASS/PTX treatment; product default stays PTX pending prospective measured criteria. | L | Qualified upstream images/load path replace this treatment, or treatment is rejected. |
 
-| # | Commits | Item | Class | Upstream status | Removal path |
-| --- | --- | --- | --- | --- | --- |
-| K1 | `61f1590c`, `25368139` | Packages renamed to `candle-{core,nn,transformers}-fathomdb` with library names unchanged; workspace trimmed to those three crates; CPU-safe defaults; 0.10.3 versions (`25368139` is the release that ships K5) | `P` | fork-only by nature | drop when FathomDB uses upstream `candle-*` crates, which needs every other item upstreamed or unneeded |
-| K2 | `2e24bc12` (begun in `61f1590c`) | On Linux AArch64 only, `gemm` is built without its f16 backend, which emits `fullfp16` instructions; CPU F16 matmul there returns `UnsupportedDTypeForOp`; test `candle-core/tests/aarch64_linux_cpu.rs` | `L` | not upstream: `candle-core/Cargo.toml:21` on `main` uses default `gemm` features; no PR or issue found (closed #494 is related only) | drop if `gemm` detects `fullfp16` at run time, or FathomDB drops its Linux AArch64 CPU baseline |
-| K3 | `5719d90e` | cudarc feature `dynamic-loading` instead of `dynamic-linking`: NVIDIA libraries are opened at run time, so CPU use needs no NVIDIA library | `L` | not upstream: `Cargo.toml:60` (`0.11.0`) and `:58` (`main`) use `dynamic-linking`; issues #3208 and #3900 open; PRs #3209 and #3373 closed unmerged 2026-10-08; PR #3916 open; the `ug` blocker was removed on `main` by #3954 | drop when an upstream release ships `dynamic-loading` |
-| K4 | `20ca927b`, `cf02edbc`, `1aefdd00` | `candle-kernels/build.rs` links `cudart_static` (whole archive, plus `dl`, `rt`, `pthread`) instead of `libcudart.so`, and searches `$CUDA_PATH/targets/{x86_64,aarch64}-linux/lib`; `candle-kernels` is taken from the workspace path | `L` | not upstream: `candle-kernels/build.rs:70` (`0.11.0`) and `:78` (`main`) link `dylib=cudart`; issue #3900 open; PRs #3891 and #3916 open | drop when an upstream release's default CUDA build does not link `libcudart.so` |
-| K5 | `73e267d0`, `5b74532e` | Public `CudaDevice::from_context` (on the context's default stream) and `Device::new_cuda_from_context`, with tests: a caller-made context, such as one on a private memory pool, backs a Candle device | `U` | no public equivalent: upstream has a private `from_context_and_stream` (`cuda_backend/device.rs:393` on `0.11.0`, #3565); open PR #3777 would make it public (issue #1751). Upstream `BackendDevice::new` now uses `per_thread_stream()` | drop when an upstream release has a public constructor from an existing context |
-| K6 | `859b8ea1` | Kernel build script reruns when `CUDA_PATH` changes | `U` | not upstream; no PR or issue | drop with K4 |
-| K7 | `0d6fa138` | Depends on `cudarc-fathomdb` (FathomDB's cudarc fork, which adds a private memory pool) at a qualified commit, as `cudarc = { package = "cudarc-fathomdb", git, rev }`; the crate name stays `cudarc` and the features are unchanged | `P` | not applicable: upstream uses registry `cudarc` (0.19.8 on `0.11.0`, 0.19.10 on `main`) | drop when upstream cudarc ships an equivalent private-pool API in a release Candle uses, or FathomDB no longer needs private pools |
-| K7t | `d4ffdf58`, `853324fc` | Test `candle-core/tests/cuda_private_pool.rs`: a device built on a private-pool context allocates from that pool and leaves the default pool untouched | `L` | not applicable: tests K7's dependency | drop with K7 |
-| K8 | `cd64715e` | 0.10.4 versions, depending on registry `cudarc-fathomdb` 0.19.10 | `P` | not applicable | drop with K7 and K1 |
+## Interface and qualification limits
 
-## Notes
+`Module::image(&self) -> Option<&'static [u8]>` returns immutable embedded
+fatbinary bytes only for an enabled candidate build. `None` means use the
+existing PTX text. Module IDs/index/PTX/custom-PTX behavior remain unchanged.
+The production module cache uses this same loader; native errors propagate
+without a new retry or recovery path. Build target rows and refusal cases are
+in `candle-kernels/README.md` and the owning design.
 
-- **MoE kernels.** `libmoe.a` holds SASS for the single architecture named
-  by `CUDA_COMPUTE_CAP` at build time, with no PTX, so its kernels run only
-  on that architecture. The other kernels are PTX and JIT-compile on newer
-  GPUs.
-- **SBSA.** K4 maps every AArch64 target to `targets/aarch64-linux`, the
-  Jetson layout. NVIDIA's server-ARM toolkits use `targets/sbsa-linux`;
-  FathomDB has no SBSA target, and this is not tested.
+The upstream graph-HTOD TLS cache stays inactive: no selected FathomDB caller
+invokes its guard API. Future enablement requires its own loss/ownership review.
+New upstream dtype/quantized/backend code is not new FathomDB product support.
+MoE remains native-only for its selected build architecture, without PTX and
+outside selected F32 model paths. SBSA linkage is unqualified; ARM here means
+the selected JetPack/Tegra venue. Clean targets are required when changing
+NVCC/host compiler/toolkit inputs not identified by the upstream cache.
+Real reset survival requires separately authorized positive native children;
+CPU seams and healthy drop tests cannot close the original Orin defect.

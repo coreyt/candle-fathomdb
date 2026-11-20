@@ -15,7 +15,8 @@ driverless mapping, baseline ARM CPU safety or .29 typed loss/drop behavior.
 Select published upstream Candle0.11.1 source
 59f8e903ca80a32ea7f8514b39748fc979e69e82, authenticated by registry
 candle-core0.11.1 .cargo_vcs_info.json. Current upstream main1a49dc27 is a
-comparison only. Keep unpublished fork0.12.0 package names, trimmed workspace
+comparison only. Existing fork0.12.0 packages are already published at2ee39305; candidate
+source requires fresh package versions. Keep package library names, trimmed workspace
 and CPU-safe defaults; kernels become0.11.1 source with qualified local deltas.
 Use exact qualified cudarc0.20.0. No publication/new dtype/backend or cutile
 adoption. Upstream removed ug; selected graph must lose its old cudarc0.17.8
@@ -32,7 +33,7 @@ pointer guards and handle check immediately before unchanged raw GEMM.
 | K4/K6 | Retain static whole-archive CUDART, CUDA_PATH target search/rerun and header/source rebuild inputs; no forbidden NVIDIA DT_NEEDED. |
 | K5 | Retain existing-context constructor with tracked private pool/default stream and owning cuda_from_context tests. |
 | K7/K7t | Retain renamed exact cudarc and actual private-pool isolation/accounting test. Marker absence must not alter any allocator or product tegra-pool. |
-| K8/K9 | Replace old publication assumptions with exact unpublished Git cohort; match kernel source, package graph and downstream normalized graph. |
+| K8/K9 | Replace old publication assumptions with fresh exact Git cohort; match kernel source, package graph and downstream normalized graph. |
 | .29 raw F32 | Preserve admitted checked handle boundary and exact dimensions/strides/F32 compute/algo; healthy output and lost-token refusal controls execute real helper. |
 
 Upstream zip9.1.3 defaults-disabled and tokenizer0.23.1/fancy-regex are selected
@@ -171,3 +172,106 @@ status2/typed exact failure, healthy USED release and successful4MiB retry on
 SAME generation/token/allocator. Do not infer real-reset proof from CPU seams.
 Original expectedSIGSEGV history remains unexecuted; seq377 live faults remain
 HELD pending concrete reviewed productcommands/artifacts/actor/authority.
+
+## Observed native attribution refinement
+
+Actual Orin Fill: healthyPTX PASS, JIT-disabled owning module load RED101
+JIT_COMPILATION_DISABLED. Separate forcedPTX fails at prior cuBLAS construction
+ALLOC_FAILED, not Candle output. Preserve both failures. Extract the current
+private production module-load helper used by the ordinary Candle module cache;
+new owning unit tests call this SAME helper and launch seven selected existing
+kernels on cudarc buffers with authored exact values, without BLAS/model setup.
+Native disableJIT and forcedPTX can then qualify actual Candle route/symbol/
+readback independently. No test-only alternate loader or vendorBLAS repair.
+Existing Tensor/BGE/reranker default-dispatch numerical/adoption and final-owner
+controls remain selected. Direct Astra reviews this focused design delta before
+helper/image source edits; it is not another plan FIX cycle.
+
+
+## Registry identity correction (proposed delivery successor)
+
+Registry .cargo_vcs_info confirms all existing0.12.0 trio packages at2ee39305
+and cudarc0.20.0 at343b04fa; published core names upstream kernels0.10.2.
+Historical product Slice31 Q2 kept the modified kernels Git-only. Matching
+independent registry CUDA consumers now require a successor: candidate
+cudarc-fathomdb0.21.0, Candle trio0.13.0 and new
+candle-kernels-fathomdb0.13.0, retaining candle_kernels library name and exact
+normal dependency versions. No upstream namespace claim. Package and graph
+proof precede parent Q2/publication disposition; no publish is authorized here.
+Order is cudarc/kernel, core, nn, transformers; later registry verification is
+honestly OPEN until predecessors exist. Exact Git qualification continues
+independently. Product ADR0.8.25's complete static-CUDART ownership persists.
+
+Preflight exact versions including yanked entries and publishing authority;
+availability is not reservation and must be rechecked before later upload.
+Reversible verification uses checksum-bound normalized .crate archives in an
+isolated staging registry and an external no-root-patch CUDA consumer. Core
+AND nn exact kernel aliases and every .cu/.cuh/build.rs package input must
+match. Staging is not public-registry download/consumer proof.
+
+
+## K6 current build-tool successor
+
+Primary registry cudaforge0.1.6 at903f226b64b737a23610df361ec6371aaebdfd0d
+adds header watch hashes to both caches. Select =0.1.6 and .watch(["src"])
+on both builders, then remove manual cache/output invalidation only after the
+same actual compiler/header tests pass at new exact source+lock. Preserve all
+0.1.5 RED/GREEN and failed candidate evidence. Native compiler flags/targets/
+runtime code stay fixed; prior native applicability requires actual identity
+comparison. Installed/adoption arms use final0.1.6. No new product scope.
+
+
+## Append-only commit-class correction
+
+The following commits omitted the required `Fork-Class:` trailer. This is
+historical noncompliance, not a claim that trailers were present. Parent agent coordination
+directed this narrow append-only classification/path audit; original refs and
+all measured source bindings remain intact. No history is rewritten. Future
+commits still require the existing trailer and class/path separation rules.
+
+| Exact commit | Actual class | Changed paths audited |
+| --- | --- | --- |
+| `d4b45a062448fd5da0bad767353316f89cd4219e` | L | CUDA loader/image and lifecycle tests; kernel build.rs |
+| `859306eb4eef555fbdd669f317882f4f5c0aba04` | P | Root and four consumed package manifests |
+| `64550bbdb2906609e6f3a1b41b2f8c54d1e2c270` | L | Owning OOM and completed-clone tests |
+| `db4aee3747eb70f57da6b85d87c9e86d486f931d` | L | Completed-clone context synchronization test |
+| `b987301be1e2cdd7129b1de61f98a9a619843556` | P | Kernel build dependency manifest |
+| `da0bacce3aa8bba1365774dc549e63393c83ccf4` | U | Kernel build.rs upstream-owned watch invalidation |
+| `4eb768c62c1a57a00f4942e738f148a94fbcbddb` | P | Packaged kernel README and build/interface contract |
+
+`git diff-tree --no-commit-id --name-only -r` on each exact commit confirms
+none changed `FATHOMDB.md` or `fathomdb/`; there were no mixed owning-doc/code
+paths. Earlier Slice60 commits retain their actual U/L/P/D trailers. Current
+code pin remains `4eb768c62c1a57a00f4942e738f148a94fbcbddb`; this correction
+and current owning inventory are D-only documentation, outside shipped crates.
+
+
+## Current source and native evidence
+
+Final code candidate is `4eb768c62c1a57a00f4942e738f148a94fbcbddb`,
+coherent trio/kernel0.13.0 with cudarc0.21.0. Upstream0.11.1 source is
+59f8e903ca80a32ea7f8514b39748fc979e69e82; FATHOMDB.md inventories every
+K1–K9/K7t disposition. The production cache loader and all new controls have
+direct source review. Real compiler selection and BOTH declared header branches
+had semantic REDs; exact cudaforge0.1.6 watch successor passed the same two
+compiler/rebuild controls. Compiler invocation evidence is not a claim that a
+comment-only header edit changes kernel bytes.
+
+Actual3090 and Orin healthy sessions at db4aee37/0.1.5 executed seven authored
+known-output families in ordinary, JIT-disabled-native and forced-PTX routes;
+209/500, Tensor/context/private-pool/final-owner, owning OOM status2+same-
+generation retry and positive last-clone controls passed. Legacy expected
+SIGSEGV history was not flipped. Actual final0.1.6 selected-family fatbin/PTX
+comparison on x86 is byte-identical;20/22 total payloads match, with differing
+Quantized bytes inspection-only. MoE/native75/unsupported families are not
+inherited runtime claims. Those earlier sessions remain0.1.5 executions.
+
+Final0.1.6 normalized-package archives built and compiled an independent
+no-root-patch consumer, with matching x86/ARM logical source graph and actual
+3090 and driverless CPU known-output/post-drop exit0. Final product Python
+PTX/native wheels built and passed installed3090 model/real-DB lifecycle and
+driverless CPU checks. Those are distinct from public registry delivery, actual
+reset, adoption cost and the full product gate, which remain OPEN. Retained
+raw evidence is under `/mnt/data/tmp2/fathomdb-0830-slice60/`; remote healthy
+Orin evidence is `/tmp/fathomdb-0830-slice60/terra-orin-healthy-evidence/`.
+No source gate or unexecuted fault row is promoted by this D receipt.
