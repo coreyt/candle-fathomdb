@@ -37,7 +37,7 @@ fn completed_tensor_last_clone_drops_with_a_distinct_final_owner_witness() -> ca
     let clone = Arc::new(original.clone());
     let weak_clone = Arc::downgrade(&clone);
     assert_eq!(original.narrow(0, 0, 4)?.to_vec1::<f32>()?, [1.; 4]);
-    device.synchronize()?;
+    context.synchronize().map_err(w)?;
     assert!(pool.used_current().map_err(w)? >= 8 << 20);
     println!("tensor-last-clone: ready completed-construction synchronized live-bytes>=8388608 mode={mode}");
     if mode == "reset" {
