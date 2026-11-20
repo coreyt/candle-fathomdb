@@ -15,7 +15,7 @@ exclude = [
 resolver = "2"
 
 [workspace.package]
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 description = "Minimalist ML framework."
 repository = "https://github.com/coreyt/candle-fathomdb"
@@ -28,18 +28,18 @@ ab_glyph = "0.2.23"
 accelerate-src = { version = "0.3.2" }
 anyhow = { version = "1", features = ["backtrace"] }
 byteorder = "1.4.3"
-candle = { path = "./candle-core", package = "candle-core-fathomdb", version = "0.12.0" }
+candle = { path = "./candle-core", package = "candle-core-fathomdb", version = "=0.13.0" }
 candle-datasets = { path = "./candle-datasets", version = "0.11.1" }
 candle-flash-attn = "0.11.1"
 candle-flash-attn-v3 = "0.11.1"
-candle-kernels = { path = "./candle-kernels", version = "0.11.1" }
+candle-kernels = { path = "./candle-kernels", package = "candle-kernels-fathomdb", version = "=0.13.0" }
 candle-metal-kernels = "0.11.1"
-candle-nn = { path = "./candle-nn", package = "candle-nn-fathomdb", version = "0.12.0" }
+candle-nn = { path = "./candle-nn", package = "candle-nn-fathomdb", version = "=0.13.0" }
 candle-onnx = "0.11.1"
-candle-transformers = { path = "./candle-transformers", package = "candle-transformers-fathomdb", version = "0.12.0" }
+candle-transformers = { path = "./candle-transformers", package = "candle-transformers-fathomdb", version = "=0.13.0" }
 clap = { version = "4.2.4", features = ["derive"] }
 criterion = { version = "0.8", default-features = false }
-cudarc = { package = "cudarc-fathomdb", version = "0.20.0", features = [
+cudarc = { package = "cudarc-fathomdb", version = "=0.21.0", features = [
     "std",
     "cublas",
     "cublaslt",
