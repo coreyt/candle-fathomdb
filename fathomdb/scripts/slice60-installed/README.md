@@ -35,3 +35,17 @@ that reopens that exact DB and verifies both authored source IDs/bodies.
 Missing GPU, timeout, signal, absent marker or skipped body never counts PASS.
 Keep raw logs/samples outside the checkout. Never run actual reset as an
 ordinary smoke or use this tool for same-process CUDA recovery.
+
+
+`run.py` is the reviewed3090-only healthy/recovery launcher. It requires
+`AGENT_LONG=1`, `SLICE60_ROOT`, `FATHOMDB_GPU_UUID`, `FATHOMDB_GPU_LOCK`,
+`FATHOMDB_GPU_LOCK_INODE`, `FATHOMDB_NODE`, `FATHOMDB_NODE_VERSION`,
+`FATHOMDB_RESET_ACTOR` and `FATHOMDB_RESET_ACTOR_SHA256`; optional
+`FATHOMDB_ACTOR_OUTPUT` is a new directory under the owned root. Its sibling
+coordinate scripts are the exact child bodies. It cannot select a reset mode.
+Its40/24GiB RAM floors and installed x64 platform package are local3090 scope,
+not an Orin protocol. Before running, independently retain/recheck actual
+R580.178.04 driver, host primary CUDA12.6.68, artifact build receipts (Python
+manylinux CUDA12.6.3 is a distinct compiler receipt), and all six pinned model
+hashes. The launcher does not itself establish driver/toolkit equality. Logs
+must bind that preflight to exact launcher/child/actor/package hashes.
