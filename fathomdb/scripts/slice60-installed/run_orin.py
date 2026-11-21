@@ -1,10 +1,20 @@
-import ctypes,fcntl,hashlib,json,os,pathlib,shutil,signal,subprocess,time
+import ctypes,fcntl,hashlib,json,os,pathlib,re,shutil,signal,subprocess,time
 if not __debug__:raise RuntimeError('optimized Python is not supported')
 if os.environ.get('AGENT_LONG')!='1':raise RuntimeError('set AGENT_LONG=1 for the approved qualification')
 B=pathlib.Path(os.environ['SLICE60_ROOT']).resolve();UUID=os.environ['FATHOMDB_GPU_UUID'];O=pathlib.Path(os.environ.get('FATHOMDB_ACTOR_OUTPUT',str(B/'terra-installed-actors-evidence'))).resolve();L=pathlib.Path(os.environ['FATHOMDB_GPU_LOCK']);LOCK_INODE=int(os.environ['FATHOMDB_GPU_LOCK_INODE']);CORE=pathlib.Path(__file__).resolve().parent
 if not O.is_relative_to(B):raise RuntimeError('output must be under SLICE60_ROOT')
 # Jetson process APIs returned NVML_NOT_SUPPORTED. fuser can only observe
 # accessible /proc entries, so this is an observed-peer guard, not host-wide proof.
+def classify_fuser_stderr(stderr):
+ warnings=[]
+ for raw in stderr.splitlines():
+  line=raw.strip()
+  if not line:continue
+  m=re.fullmatch(r'Cannot stat file /proc/([0-9]+)/fd/([0-9]+): Permission denied',line)
+  if m:warnings.append({'pid':int(m.group(1)),'fd':int(m.group(2))});continue
+  if re.fullmatch(r'(?:/dev/nvhost-gpu:|/dev/nvmap:)(?:\s*(?:/dev/nvhost-gpu:|/dev/nvmap:))*',line):continue
+  raise RuntimeError('unexpected fuser stderr: '+line)
+ return warnings
 last_fuser=None;last_details={};last_fuser_rss=None
 def proc(pid):
  status=pathlib.Path(f'/proc/{pid}/status').read_text();fields={x.split(':',1)[0]:x.split(':',1)[1].strip() for x in status.splitlines() if ':' in x};stat=pathlib.Path(f'/proc/{pid}/stat').read_text();tail=stat[stat.rfind(')')+2:].split()
@@ -13,7 +23,8 @@ def actors():
  global last_fuser,last_details,last_fuser_rss
  f=None;last_fuser=None;last_fuser_rss=None;last_details={}
  try:
-  f=subprocess.Popen(['/usr/bin/fuser','/dev/nvhost-gpu','/dev/nvmap'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True);last_fuser=f.pid
+  env=os.environ.copy();env['LC_ALL']='C'
+  f=subprocess.Popen(['/usr/bin/fuser','/dev/nvhost-gpu','/dev/nvmap'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=env);last_fuser=f.pid
   try:last_fuser_rss=proc(f.pid)['rss']
   except (OSError,KeyError,IndexError):pass
   stdout,stderr=f.communicate(timeout=2)
@@ -28,7 +39,15 @@ def actors():
      except ProcessLookupError:pass
      f.wait()
    else:f.wait()
- assert f.returncode in (0,1),(f.returncode,stderr);assert 'Permission denied' not in stderr,stderr
+ record={'helper_pid':last_fuser,'returncode':f.returncode,'stderr':stderr,'stdout':stdout,'locale':'C'}
+ try:
+  if f.returncode not in (0,1):raise RuntimeError(f'unexpected fuser exit {f.returncode}')
+  record['visibility_warnings']=classify_fuser_stderr(stderr)
+ except BaseException as exc:
+  record['error']=repr(exc)
+  with (O/'fuser-observations.jsonl').open('a') as evidence:evidence.write(json.dumps(record)+'\n')
+  raise
+ with (O/'fuser-observations.jsonl').open('a') as evidence:evidence.write(json.dumps(record)+'\n')
  ids=sorted(set(int(x) for x in stdout.split()))
  for pid in ids:
   try:last_details[str(pid)]=proc(pid)

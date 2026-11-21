@@ -41,3 +41,17 @@ Run `python3 orin-monitor-control.py` for the CPU-only real process-group/
 helper cleanup and ownership-accounting control; it does not call CUDA. It
 compares both committed variants' ownership functions, tests interrupted helper
 reaping, unique TGID RSS accounting and wrong-birth/unknown-peer rejection.
+
+
+The0.8.30 adoption campaign stopped at its eighth child on a visibility error
+and136.911ms sample gap; it is inconclusive and native defaults are not adopted.
+The measured runner remains unchanged. Do not replay/retime its unrun cells.
+The ordinary healthy actor alone records exact proc-FD EACCES visibility warnings
+without treating them as positively observed GPU peers; all other errors and
+actual unknown observed actors still fail. Its `fuser-observations.jsonl` keeps
+raw stdout/stderr/status/helper and warning IDs. Run
+`python3 ../slice60-installed/test_fuser_warning.py ../slice60-installed/run_orin.py`
+for the captured-warning/unknown-peer regression. `orin-monitor-control.py`
+compares shared proc/RSS logic and exercises the updated ordinary actor's real
+helper interruption/reap, TGID accounting and wrong-owner rejection. This does
+not reinterpret the stopped campaign or assert host-wide peer absence.

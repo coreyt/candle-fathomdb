@@ -291,3 +291,19 @@ conditions within seq410 before trials; actual reset remains separately held.
 The one matched ABBA campaign uses unchanged adoption/numerical thresholds,
 source/lock/toolchain and artifact identities. Every actual adverse or
 inconclusive row remains recorded and preserves baseline as selected.
+
+
+## Native default selection
+
+The one Orin campaign was inconclusive:7 measured children validated, eighth
+returned valid outputs/close/exit0 but failed visibility/cadence protocol;
+remaining32 measured cells and4 prewarms are NOT RUN. The preselected rule
+therefore rejects native-default adoption for0.8.30. Product and generic crate
+remain PTX0; no native-producer flip is allocated to75. The3090 passing campaign
+and all actual native/size/build outcomes retain their original8e/4eb subjects.
+Final packaged metadata code pins3509cd6bd83b44204be1880e833474ab0f75e060
+(cudarc) and952edb7dcd1e29563acedd485a3c1ce8ef07a85c (Candle) change no
+manifest/Rust/build/test inputs. Final3509/2014 owning CPU qualification ran
+323 x86 and322 ARM controls once each, all passed/zero ignored. Preserve old
+runs separately; final installed/source and actual reset claims require their
+own actual applicability/proof. Public delivery and reset remain held.

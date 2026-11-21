@@ -3,7 +3,11 @@ P=pathlib.Path(__file__).resolve().parent
 names={'proc','actors','owned_rss'}
 def functions(path):
  tree=ast.parse(path.read_text());return [x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name in names]
-a=functions(P/'run_orin.py');b=functions(P.parent/'slice60-installed/run_orin.py');assert ast.dump(ast.Module(body=a,type_ignores=[]),include_attributes=False)==ast.dump(ast.Module(body=b,type_ignores=[]),include_attributes=False)
+adoption=pathlib.Path(sys.argv[1]).resolve() if len(sys.argv)>1 else P/'run_orin.py'
+actor=pathlib.Path(sys.argv[2]).resolve() if len(sys.argv)>2 else P.parent/'slice60-installed/run_orin.py'
+a=functions(adoption);b=functions(actor)
+for name in ('proc','owned_rss'):
+ x=next(n for n in a if n.name==name);y=next(n for n in b if n.name==name);assert ast.dump(x,include_attributes=False)==ast.dump(y,include_attributes=False)
 real=subprocess.Popen
 class Interrupting:
  def __init__(self,*args,**kwargs):
@@ -16,7 +20,7 @@ class Interrupting:
   value=self.child.wait(timeout=timeout);self.returncode=value;return value
 class Sp:
  PIPE=subprocess.PIPE;TimeoutExpired=subprocess.TimeoutExpired;Popen=Interrupting
-created=[];ns={'os':os,'pathlib':pathlib,'subprocess':Sp,'last_fuser':None,'last_details':{},'last_fuser_rss':None};exec(compile(ast.Module(body=a,type_ignores=[]),str(P/'run_orin.py'),'exec'),ns)
+created=[];ns={'os':os,'pathlib':pathlib,'subprocess':Sp,'last_fuser':None,'last_details':{},'last_fuser_rss':None};exec(compile(ast.Module(body=b,type_ignores=[]),str(actor),'exec'),ns)
 try:ns['actors']()
 except KeyboardInterrupt:pass
 else:raise AssertionError('interruption not propagated')
