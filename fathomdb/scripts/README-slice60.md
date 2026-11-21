@@ -29,3 +29,9 @@ The prospective product criteria/tolerances live in FathomDB Slice60 design.
 Record all neutral/adverse outcomes and preserve PTX default on any miss or
 inconclusive row. Do not tune hosts, rewrite logs, relax cadence/thresholds or
 replay an unchanged campaign for a better result.
+
+
+[Orin ordinary-session adapters](slice60-adoption/README-orin.md) retain the
+same committed worker and criteria, use original Orin floors and verified live
+owned identities, and explicitly retain unsupported cross-user/GPU-total
+visibility limits. They do not grant actual reset authority.

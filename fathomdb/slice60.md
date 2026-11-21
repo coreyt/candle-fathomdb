@@ -275,3 +275,19 @@ reset, adoption cost and the full product gate, which remain OPEN. Retained
 raw evidence is under `/mnt/data/tmp2/fathomdb-0830-slice60/`; remote healthy
 Orin evidence is `/tmp/fathomdb-0830-slice60/terra-orin-healthy-evidence/`.
 No source gate or unexecuted fault row is promoted by this D receipt.
+
+
+## Prospective Orin session conditions
+
+Ordinary healthy comparisons retain the existing cooperative lease and exact
+Orin UUID, original RAM/swap/disk floors and bounded inputs/private cap. NVML
+process APIs are NOT_SUPPORTED and unprivileged fuser has cross-user visibility
+limits. After an original unresolved PID abort and sudo-n password refusal,
+separate live PPid/PGID/start-time evidence established an owned nvidia-smi
+subprocess mechanism. New launchers verify owned identities and abort observed
+unknown/foreign actors; they do not claim absolute other-process absence or a
+hard total-device byte bound. Parent coordination accepted these ordinary
+conditions within seq410 before trials; actual reset remains separately held.
+The one matched ABBA campaign uses unchanged adoption/numerical thresholds,
+source/lock/toolchain and artifact identities. Every actual adverse or
+inconclusive row remains recorded and preserves baseline as selected.
