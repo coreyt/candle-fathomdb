@@ -72,7 +72,7 @@ try:
  if before['status']=='private':
   assert str(before['context_id'])==str(identifier.value)
   assert int(before['live_models_after'])==3,before
-  assert int(before['used_current_bytes'])<=int(before['configured_max_size_bytes'])<=8<<30
+  assert int(before['used_current_bytes'])<=int(before['configured_max_size_bytes'])==3<<30
  print('INSTALLED-COORDINATE READY '+json.dumps({'mode':mode,'pid':os.getpid(),'uuid':actual_uuid,'context_id':str(identifier.value),'pool':before,'native_sha256':hashlib.sha256(pathlib.Path(native.__file__).read_bytes()).hexdigest()}),flush=True)
  if mode=='healthy':check(setcurrent(previous),'healthy-restore-prior')
  elif mode in ('reset-refuse','reset-drop'):check(reset(dev),'process-primary-reset')
@@ -99,7 +99,7 @@ elif mode=='reset-refuse':
     if first is None:first=cause
     assert cause==first,(cause,first)
    else:raise AssertionError('lost generation unexpectedly forwarded')
- print('INSTALLED-COORDINATE typed-refusal32 '+repr(first),flush=True)
+ print('INSTALLED-COORDINATE typed-refusal32 '+json.dumps(first),flush=True)
 # reset-drop deliberately does no forward, observation, query or bind before close.
 engine.close();del engine;gc.collect()
 after=json.loads(native._cuda_pool_observation_for_qualification())

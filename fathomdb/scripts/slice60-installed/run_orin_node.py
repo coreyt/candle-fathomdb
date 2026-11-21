@@ -1,4 +1,6 @@
 import ctypes,fcntl,hashlib,json,os,pathlib,re,shutil,signal,subprocess,time
+from campaign import configuration, validate_child
+CAMPAIGN, ARMS, SESSION_START = configuration(('a',))
 if not __debug__:raise RuntimeError('optimized Python is not supported')
 if os.environ.get('AGENT_LONG')!='1':raise RuntimeError('set AGENT_LONG=1 for the approved qualification')
 B=pathlib.Path(os.environ['SLICE60_ROOT']).resolve();UUID=os.environ['FATHOMDB_GPU_UUID'];O=pathlib.Path(os.environ.get('FATHOMDB_ACTOR_OUTPUT',str(B/'terra-installed-actors-evidence'))).resolve();L=pathlib.Path(os.environ['FATHOMDB_GPU_LOCK']);LOCK_INODE=int(os.environ['FATHOMDB_GPU_LOCK_INODE']);CORE=pathlib.Path(__file__).resolve().parent;NODE=pathlib.Path(os.environ['FATHOMDB_NODE']);NODE_VERSION=os.environ['FATHOMDB_NODE_VERSION'];ACTOR=pathlib.Path(os.environ['FATHOMDB_RESET_ACTOR']);ACTOR_SHA=os.environ['FATHOMDB_RESET_ACTOR_SHA256']
@@ -84,8 +86,8 @@ def rss(pid):
 
 def run(arm,mode):
  language='node'
- name=f'{language}-{arm}-{mode}';capture=O/f'{language}-{arm}-database'
- if not resource()['ok'] or actors():raise RuntimeError(name+' failed precheck')
+ name=f'{language}-{arm}-{mode}';capture=O/f'{language}-{arm}-{CAMPAIGN}-database'
+ if time.monotonic()-SESSION_START>=1800 or not resource()['ok'] or actors():raise RuntimeError(name+' failed precheck')
  cache=O/f'cache-{name}';cache.mkdir()
  env=os.environ.copy()
  for k in ['CUDA_FORCE_PTX_JIT','CUDA_DISABLE_PTX_JIT','CUDA_FORCE_JIT','CUDA_DISABLE_JIT','CUDA_CACHE_DISABLE','CUDA_CACHE_MAXSIZE','CUDA_MODULE_LOADING','FATHOMDB_RERANKER_CACHE','FATHOMDB_POOL_MODE']:env.pop(k,None)
@@ -120,10 +122,7 @@ def run(arm,mode):
    except OSError:pass
  text=(O/(name+'.log')).read_text()
  if not p or p.returncode or reason or not count or not saw or gap>.1:raise RuntimeError(name+' failed, see log')
- if mode=='healthy':
-  for marker in ['INSTALLED-COORDINATE READY ','INSTALLED-COORDINATE coordinated ','INSTALLED-COORDINATE POST-DROP ']:assert text.count(marker)==1,(name,marker)
-  ready=json.loads(next(x.split('READY ',1)[1] for x in text.splitlines() if 'INSTALLED-COORDINATE READY ' in x));assert ready['native_sha256']==native_sha and ready['mode']=='healthy' ;coordinated=json.loads(next(x.split('coordinated ',1)[1] for x in text.splitlines() if 'INSTALLED-COORDINATE coordinated ' in x));assert coordinated['uuid']==UUID and coordinated['mode']=='healthy' and coordinated['balanced_release'];pool=ready['pool'];assert pool['status']=='private' and int(pool['live_models_after'])==3 and int(pool['used_current_bytes'])<=int(pool['configured_max_size_bytes'])<=3*2**30;post=json.loads(next(x.split('POST-DROP ',1)[1] for x in text.splitlines() if 'INSTALLED-COORDINATE POST-DROP ' in x));assert post['pool']['status']=='private' and int(post['pool']['live_models_after'])==2 and post['pool']['context_id']==pool['context_id'] and post['pool']['pool_id']==pool['pool_id']
- else:assert text.count('INSTALLED-COORDINATE fresh-process-recovery post-drop')==1
+ validate_child(text,mode,native_sha,UUID,private=True)
  print(name,'PASS',native_sha,'gap',gap,flush=True)
 
 models=json.loads((B/'evidence/model-cache-identity.json').read_text())
@@ -131,9 +130,9 @@ for f in models['files']:
  q=B/'model-cache/fathomdb'/f['file'];assert q.stat().st_size==f['bytes'] and hashlib.sha256(q.read_bytes()).hexdigest()==f['sha256']
 assert subprocess.check_output([str(NODE),'--version'],text=True).strip()==NODE_VERSION
 assert hashlib.sha256(ACTOR.read_bytes()).hexdigest()==ACTOR_SHA
-O.mkdir();(O/'source-sha256.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p)+'\n' for p in [CORE/'coordinate.mjs',ACTOR,NODE.resolve()]))
+O.mkdir();(O/'source-sha256.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p)+'\n' for p in [CORE/'campaign.py',CORE/'coordinate.mjs',ACTOR,NODE.resolve()]))
 with L.open('rb') as lock:
- assert os.fstat(lock.fileno()).st_ino==LOCK_INODE;fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);session=time.monotonic();pre=resource(True);(O/'preflight.json').write_text(json.dumps({'resources':pre,'actors':actors(),'gpu_total_used':'unavailable','peer_visibility':'unprivileged fuser observed-only; NVML process APIs unsupported'}));assert pre['ok'] and not actors()
- for arm in ['a']:
-  run(arm,'healthy');run(arm,'recover')
+ assert os.fstat(lock.fileno()).st_ino==LOCK_INODE;fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);session=SESSION_START;pre=resource(True);(O/'preflight.json').write_text(json.dumps({'campaign':CAMPAIGN,'arms':ARMS,'shared_venue_started_monotonic':SESSION_START,'action':os.environ.get('FATHOMDB_RESET_ACTION'),'owner_ruling':os.environ.get('FATHOMDB_RESET_AUTHORIZATION'),'resources':pre,'actors':actors(),'gpu_total_used':'unavailable','peer_visibility':'unprivileged fuser observed-only; NVML process APIs unsupported'}));assert pre['ok'] and not actors()
+ for arm in ARMS:
+  run(arm,CAMPAIGN);run(arm,'recover')
  (O/'completed.json').write_text(json.dumps({'elapsed':time.monotonic()-session,'resources':resource(),'actors':actors()}))

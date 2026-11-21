@@ -67,3 +67,30 @@ retained; it is not the maintained Tegra linkage/import verdict and a failed
 Tegra thin import cannot be relabeled as this SDK lifecycle passing. For Tegra
 use the existing FathomDB `scripts/release/smoke/tegra_node_driverless_probe.sh`
 and verdict with their exact declared negative-selection/addon-import scope.
+
+The launchers default to `FATHOMDB_COORDINATED_CAMPAIGN=healthy` and accept
+`FATHOMDB_ARTIFACT_ARMS=final` for the frozen PTX0 artifact. Fault campaigns
+`reset-refuse` and `reset-drop` require final-only subjects, an explicit
+`FATHOMDB_RESET_AUTHORIZATION=seq-N` owner-ruling label,
+`FATHOMDB_RESET_ACTION=slice60-process-primary-v1`, and one shared
+`FATHOMDB_VENUE_STARTED_MONOTONIC` across every child in that venue session.
+These environment checks select a reviewed action; they do not grant permission.
+Actual resets remain held until the owner separately authorizes the exact
+subjects, actor, fault resource/visibility limits and commands. Seq410 covers
+healthy work only. Faults use original fault floors, not the healthy-only3090
+RAM amendment. Each campaign/language has a separate DB and immediate fresh
+same-DB recovery. The cumulative venue deadline is30minutes.
+
+The pre-action bridge checks selected UUID before retaining and available
+private context ID before binding/resetting. Installed Orin children require
+exactly3live owners, the default3GiB cap and USED≤cap before the action.
+`campaign.py` validates distinct healthy/recovery/fault markers, exactly one
+identity-matched native loss snapshot for a fault, and cached typed-refusal cause.
+The x86 Node observer may be unavailable; then the bridge's validated context ID
+supplies identity. Run CPU verdict controls with
+`python3 fathomdb/scripts/slice60-installed/test_child_verdict.py`.
+Initial actual launcher verdicts rejected six valid fault-output bodies as
+recovery; the repaired verdict passes those cases and rejects duplicate/wrong-ID
+snapshots. The synthetic driver-ABI wrong-UUID/context RED/GREEN controls live
+in the product's `dev/tools/tests/test_slice60_cuda_reset_actor.py`; they perform
+no hardware reset and establish no physical-driver survival claim.

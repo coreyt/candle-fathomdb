@@ -42,11 +42,13 @@ if(mode==='recover'){
 }else{
  const before=JSON.parse(native.cudaPoolObservationForQualification());
  assert(['arm64','x64'].includes(os.arch()));if(os.arch()==='arm64')assert.equal(before.status,'private');
- if(before.status==='private'){assert.equal(BigInt(before.live_models_after),3n);assert(BigInt(before.used_current_bytes)<=BigInt(before.configured_max_size_bytes));assert(BigInt(before.configured_max_size_bytes)<=8n<<30n);}
+ if(before.status==='private'){assert.equal(BigInt(before.live_models_after),3n);assert(BigInt(before.used_current_bytes)<=BigInt(before.configured_max_size_bytes));assert.equal(BigInt(before.configured_max_size_bytes),3n<<30n);}
  console.log('INSTALLED-COORDINATE READY '+JSON.stringify({pid:process.pid,mode,pool:before,native:nativePath,native_sha256:crypto.createHash('sha256').update(fs.readFileSync(nativePath)).digest('hex')}));
  // No calls remain queued; the bridge retains only the already active primary,
  // synchronizes all its streams, and balances its own reference exactly once.
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(env.FATHOMDB_RESET_ACTOR)).digest('hex'),env.FATHOMDB_RESET_ACTOR_SHA256);
+ if(before.status==='private')env.FATHOMDB_EXPECTED_CONTEXT_ID=String(before.context_id);
+ else delete env.FATHOMDB_EXPECTED_CONTEXT_ID;
  const actor=require(env.FATHOMDB_RESET_ACTOR);
  const coordinated=JSON.parse(actor.coordinate(mode!=='healthy'));
  assert.equal(coordinated.uuid,env.FATHOMDB_SELECTED_UUID);assert.equal(coordinated.mode,mode);assert.equal(coordinated.balanced_release,true);
