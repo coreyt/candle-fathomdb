@@ -94,3 +94,20 @@ recovery; the repaired verdict passes those cases and rejects duplicate/wrong-ID
 snapshots. The synthetic driver-ABI wrong-UUID/context RED/GREEN controls live
 in the product's `dev/tools/tests/test_slice60_cuda_reset_actor.py`; they perform
 no hardware reset and establish no physical-driver survival claim.
+
+Ordinary Orin monitoring additionally retains full verified `nvidia-smi` helper
+identity only within one leader PID/birth. A helper that is then independently
+confirmed ENOENT is recorded as `exited_owned_history`, with current ownership
+unproven, and contributes no current RSS. Unseen PIDs, live reuse/changed birth,
+parent/group/session mismatch and other errors still abort. The strict fault
+monitor does not use this ordinary-only refinement. This does not prove peer
+absence. The original final-Python session remains NOTPASS before model READY,
+with recovery NOTRUN; the stopped adoption campaign is never replayed.
+Replay the retained raw transition with `python3
+fathomdb/scripts/slice60-installed/test_exited_helper.py <fixture.json>`.
+The raw fixture SHA256 is
+`29af8c8d80af59524dba7c82b962adbbb59c905fb7409a4a6ff20c8427d805f8`;
+logs remain in task evidence. Two actual previous-monitor ENOENT errors and two
+live-reuse failures preceded the repair; all3 CPU controls now pass. Independent
+source review also exercised exit between actor lookup and RSS read. No hardware
+reset occurred in these controls.

@@ -71,6 +71,48 @@ def owned_rss(leader,birth,ids):
   if tgid==leader and first['start_ticks']!=birth:raise RuntimeError('child PID reused')
   result[str(tgid)]=first
  return sum(x['rss'] for x in result.values())+(last_fuser_rss or 0),result
+def ordinary_owned_rss(leader,birth,ids):
+ if CAMPAIGN!='healthy':return owned_rss(leader,birth,ids)
+ identity=(leader,birth)
+ if getattr(ordinary_owned_rss,'identity',None)!=identity:
+  ordinary_owned_rss.identity=identity;ordinary_owned_rss.history={}
+ history=ordinary_owned_rss.history
+ fields=('Name','Tgid','PPid','PGID','SID','start_ticks')
+ def gone(pid):
+  previous=history.get(str(pid))
+  if previous is None:raise RuntimeError(f'unseen GPU PID disappeared: {pid}')
+  try:proc(pid)
+  except FileNotFoundError:
+   last_details[str(pid)]={'exited_owned_history':dict(previous),'current_ownership':'unproven; process now absent'}
+   return
+  raise RuntimeError(f'GPU PID became visible again: {pid}')
+ live=[]
+ for pid in ids:
+  d=last_details.get(str(pid),{});previous=history.get(str(pid))
+  if previous is not None:
+   if str(d.get('error','')).startswith('FileNotFoundError('):gone(pid);continue
+   if any(d.get(k)!=previous[k] for k in fields):raise RuntimeError(f'previously owned GPU PID identity changed: {pid}')
+  live.append(pid)
+ # A verified helper can also exit between the actor lookup and RSS read.
+ # Each removed PID is checked against this child's full identity history.
+ for _ in range(len(live)+1):
+  try:total,current=owned_rss(leader,birth,live);break
+  except FileNotFoundError as error:
+   match=re.fullmatch(r'/proc/([0-9]+)/(?:status|stat)',str(error.filename))
+   if not match:raise
+   pid=int(match.group(1))
+   if pid==leader or pid not in live:raise
+   gone(pid);live.remove(pid)
+ else:raise RuntimeError('owned RSS observation did not finish')
+ for key,d in current.items():
+  if int(key)==leader:continue
+  if d['Name']!='nvidia-smi' or d['PPid']!=leader or d['PGID']!=leader or d['SID']!=leader:
+   raise RuntimeError(f'unexpected owned GPU helper: {key}: {d}')
+  previous=history.get(key)
+  if previous is not None and any(d[k]!=previous[k] for k in fields):raise RuntimeError(f'owned helper PID reused: {key}')
+  history[key]=dict(d)
+ return total,current
+
 def mem():
  return {k:int(v.split()[0])*1024 for k,v in (line.split(':',1) for line in pathlib.Path('/proc/meminfo').read_text().splitlines())}
 def resource(start=False):
@@ -102,7 +144,7 @@ def run(arm,mode):
   try:
    p=subprocess.Popen(cmd,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True);birth=pathlib.Path(f'/proc/{p.pid}/stat').read_text().split()[21]
    while p.poll() is None:
-    now=time.monotonic();gap=max(gap,now-last if last else 0);last=now;r=resource();a=actors();total,owned=owned_rss(p.pid,birth,a);r.update(pid=p.pid,start_ticks=birth,rss=total,owned_processes=owned,fuser_rss=last_fuser_rss,elapsed=now-started,actors=a,fuser_pid=last_fuser,actor_details=dict(last_details));samples.write(json.dumps(r)+'\n');samples.flush();count+=1;saw|=p.pid in a
+    now=time.monotonic();gap=max(gap,now-last if last else 0);last=now;r=resource();a=actors();total,owned=ordinary_owned_rss(p.pid,birth,a);r.update(pid=p.pid,start_ticks=birth,rss=total,owned_processes=owned,fuser_rss=last_fuser_rss,elapsed=now-started,actors=a,fuser_pid=last_fuser,actor_details=dict(last_details));samples.write(json.dumps(r)+'\n');samples.flush();count+=1;saw|=p.pid in a
     if not r['ok'] or r['rss']>16*2**30 or r['elapsed']>120 or now-session>1800:reason='guard';break
     deadline+=.02;time.sleep(max(0,deadline-time.monotonic()))
   except BaseException as e:error=repr(e);raise
