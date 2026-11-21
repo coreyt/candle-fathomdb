@@ -49,3 +49,21 @@ R580.178.04 driver, host primary CUDA12.6.68, artifact build receipts (Python
 manylinux CUDA12.6.3 is a distinct compiler receipt), and all six pinned model
 hashes. The launcher does not itself establish driver/toolkit equality. Logs
 must bind that preflight to exact launcher/child/actor/package hashes.
+
+
+`run_orin_node.py` is the reviewed healthy-only Node25.9 Tegra A variant.
+It uses the same observed-only fuser classification/owned-RSS functions as
+`run_orin.py`, plus exact Node version, installed-versus-built Tegra native
+hash and separately compiled reviewed actor hash. Configure the same Orin
+root/UUID/lock/inode/output and Node/actor parameters; no reset mode exists.
+Its raw results retain actual source/pin attribution and visibility limits.
+
+`driverless_fixed_layout.mjs` retains the exact earlier x86 driverless SDK
+worker used inside a network-none container: mount the installed package tree
+at `/consumer/node_modules`, provide pinned model cache and explicit device
+policy, and run fresh containers with `TEST_MODE=cpu` or `forced`. The DB is
+`/tmp/node-driverless.fdb` in that fresh container. Its historical hash is
+retained; it is not the maintained Tegra linkage/import verdict and a failed
+Tegra thin import cannot be relabeled as this SDK lifecycle passing. For Tegra
+use the existing FathomDB `scripts/release/smoke/tegra_node_driverless_probe.sh`
+and verdict with their exact declared negative-selection/addon-import scope.
