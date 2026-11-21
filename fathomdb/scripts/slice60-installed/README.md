@@ -171,3 +171,18 @@ the actual diagnosis/raw DB, wrong cause/phase/redaction refusal, duplicate or
 symlink/hardlink evidence aliases and optimized-execution refusal. The main
 oracle requires distinct real report/result paths for the two executions and
 refuses `python -O`; native receipt source hashes include the exact oracle.
+
+Final authority/results: seq411 authorized seven3090 faults plus seven fresh
+recoveries; all passed. Its original SDK metadata prebinding refusal was fixed
+only for the unused Python actor hash and fresh output paths; passed native
+cases were not repeated. The initial default-OOM8GiB monitor stopped a real
+25,159,598,080-byte transient acquisition before an OOM result. The owner then
+explicitly requested one full-card24GiB retry: unchanged test/method returned
+native2, Default/typedNone, cleanup0/0 and same-generation retry, exit0. The
+isolated monitor/source digest and original failure remain in evidence.
+The maintained optional OOM-only guard requires that explicit seq411/known3090
+reference; other model/reset limits stay8GiB and ARM ordinary OOM stays8GiB.
+Seq412 subsequently authorized Orin release verification and the selected seven
+faults plus seven recoveries; all passed with the actual3GiB private pool.
+Orin peer visibility remains observed-only and total device bytes unavailable.
+No passing suite was repeated for these metadata or monitor changes.

@@ -97,8 +97,18 @@ def case_binding(path, subject, mode):
     return {'argv':command(path,subject),'executable_sha256':hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest(),'subject':subject,'mode':mode}
 
 
+def device_budget(subject):
+    if subject != 'oom' or platform.machine()=='aarch64':return 8*2**30
+    if os.environ.get('FATHOMDB_OOM_FULL_CARD_AUTHORIZATION')!='seq-411' or venue.CAMPAIGN!='healthy' or venue.UUID!='GPU-5f9cfc90-2be1-06a7-ce39-5a6d294b209b' or platform.node()!='windchill3':
+        raise RuntimeError('explicit seq-411 selected 3090 OOM-only full-card authority required')
+    total=venue.gpu().total
+    assert 0<total<=24*2**30,'not the authorized 24GiB card'
+    return total
+
+
 def run(path, subject, mode, label):
     assert time.monotonic()-venue.SESSION_START < 1800
+    gpu_limit=device_budget(subject)
     argv = command(path, subject)
     database_before=db_facts(os.environ['FATHOMDB_CLI_DATABASE']) if subject=='cli' and os.environ['FATHOMDB_CLI_ACTION'] in ('check-integrity','dump-row-counts') else None
     expected_exit=65 if subject=='cli' and os.environ['FATHOMDB_CLI_ACTION']=='check-integrity' else 0
@@ -108,7 +118,7 @@ def run(path, subject, mode, label):
         env.pop(key, None)
     cache = venue.O/('cache-'+label); cache.mkdir()
     env.update(CUDA_VISIBLE_DEVICES=venue.UUID, FATHOMDB_SELECTED_UUID=venue.UUID, FATHOMDB_REQUIRE_LIVE='1', FATHOMDB_COORDINATED_RESET=mode, FATHOMDB_EMBED_DEVICE='cuda:0', FATHOMDB_RERANK_DEVICE='cuda:0', FATHOMDB_CONSUMER_DEVICE='cuda', XDG_CACHE_HOME=str(venue.B/'model-cache'), HF_HUB_OFFLINE='1', CUDA_CACHE_PATH=str(cache))
-    (venue.O/(label+'.subject.json')).write_text(json.dumps({'subject':subject,'mode':mode,'argv':argv,'binary_sha256':hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest(),'env':{k:env[k] for k in ('CUDA_VISIBLE_DEVICES','FATHOMDB_SELECTED_UUID','FATHOMDB_REQUIRE_LIVE','FATHOMDB_COORDINATED_RESET','FATHOMDB_EMBED_DEVICE','FATHOMDB_RERANK_DEVICE','XDG_CACHE_HOME')},'shared_start':venue.SESSION_START,'action':env.get('FATHOMDB_RESET_ACTION'),'owner_ruling':env.get('FATHOMDB_RESET_AUTHORIZATION'),'fault_resource_rule':env.get('FATHOMDB_FAULT_RESOURCE_RULE','original'),'orin_fault_visibility':env.get('FATHOMDB_ORIN_FAULT_VISIBILITY')},indent=2)+'\n')
+    (venue.O/(label+'.subject.json')).write_text(json.dumps({'subject':subject,'mode':mode,'argv':argv,'binary_sha256':hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest(),'env':{k:env[k] for k in ('CUDA_VISIBLE_DEVICES','FATHOMDB_SELECTED_UUID','FATHOMDB_REQUIRE_LIVE','FATHOMDB_COORDINATED_RESET','FATHOMDB_EMBED_DEVICE','FATHOMDB_RERANK_DEVICE','XDG_CACHE_HOME')},'device_budget_bytes':gpu_limit,'shared_start':venue.SESSION_START,'action':env.get('FATHOMDB_RESET_ACTION'),'owner_ruling':env.get('FATHOMDB_RESET_AUTHORIZATION'),'fault_resource_rule':env.get('FATHOMDB_FAULT_RESOURCE_RULE','original'),'orin_fault_visibility':env.get('FATHOMDB_ORIN_FAULT_VISIBILITY')},indent=2)+'\n')
     p=None; reason=None; samples=0; saw=False; last=None; gap=0; start=time.monotonic();tick=start
     try:
         with (venue.O/(label+'.stdout.log')).open('w') as stdout, (venue.O/(label+'.stderr.log')).open('w') as stderr, (venue.O/(label+'.samples.jsonl')).open('w') as output:
@@ -129,7 +139,7 @@ def run(path, subject, mode, label):
                     if any(x!=p.pid for x in actors):raise RuntimeError('unknown native GPU peer')
                 sample.update(pid=p.pid,start_ticks=birth,rss=rss,actors=actors,elapsed=now-start)
                 output.write(json.dumps(sample)+'\n');output.flush();samples+=1
-                if not sample['ok'] or rss>16*2**30 or sample.get('gpu_used') is not None and sample['gpu_used']>8*2**30 or now-start>120 or now-venue.SESSION_START>1800:
+                if not sample['ok'] or rss>16*2**30 or sample.get('gpu_used') is not None and sample['gpu_used']>gpu_limit or now-start>120 or now-venue.SESSION_START>1800:
                     reason='resource/deadline guard';break
                 tick+=.02;time.sleep(max(0,tick-time.monotonic()))
     finally:

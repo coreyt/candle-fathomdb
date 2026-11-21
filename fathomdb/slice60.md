@@ -277,7 +277,7 @@ Orin evidence is `/tmp/fathomdb-0830-slice60/terra-orin-healthy-evidence/`.
 No source gate or unexecuted fault row is promoted by this D receipt.
 
 
-## Prospective Orin session conditions
+## Historical prospective Orin session conditions
 
 Ordinary healthy comparisons retain the existing cooperative lease and exact
 Orin UUID, original RAM/swap/disk floors and bounded inputs/private cap. NVML
@@ -306,4 +306,35 @@ Final packaged metadata code pins3509cd6bd83b44204be1880e833474ab0f75e060
 manifest/Rust/build/test inputs. Final3509/2014 owning CPU qualification ran
 323 x86 and322 ARM controls once each, all passed/zero ignored. Preserve old
 runs separately; final installed/source and actual reset claims require their
-own actual applicability/proof. Public delivery and reset remain held.
+own actual applicability/proof. At that checkpoint public delivery and reset remained held; final qualification is below.
+
+## Final selected qualification
+
+Final CODE pins are cudarc3509cd6bd83b44204be1880e833474ab0f75e060 and this
+Candle952edb7dcd1e29563acedd485a3c1ce8ef07a85c. The preceding8e/4eb,
+f02 and0.1.5 records retain their original subjects; they are not final executions.
+Fresh final-lock owning CPU tests passed323x86/322ARM, zero ignored. Final
+installed Python/Node PTX0, real persisted DB/recovery, CLI device diagnostics
+and exact read-only findings/count oracles passed on3090 and Orin; finalx86
+CPU/auto/forced-refusal driverless and maintained Tegra masked-signal linkage
+proof retain their distinct scope. The final no-root-patch normalized registry
+consumer executed known F32 output and post-drop on3090 and driverless CPU.
+
+Under actual owner411/412, seven process-primary fault children and seven fresh
+healthy recovery children passed per venue. Root models proved2→0 owners;
+installed consumers3→2 with bounded opaque module globals until process exit;
+the guarded original clone proved actual final owner destruction. Orin used its
+real3GiB private pool; inactive-primary loss has typed synthetic709 provenance,
+not a claimed native driver709 return. All children ended and both leases freed.
+Ordinary Orin OOM and owner-approved one full-card3090 Default OOM retry proved
+actual native2, healthy generation, cleanup and retry. Preserve the original
+3090 8GiB breach and healthy-clone body0/protocolNOTPASS238.325ms; owner411
+accepted that limited functional prerequisite, not a relabelled protocol pass.
+
+Product strict gate at f020b84af7b89df4588b69b4f7e558aafeae2f89 exited0:
+241registered/238ran+passed/0failed/3explicitlive-controlskips/0excluded,
+4263.969seconds, source frozen and clean. Tools are committed under
+fathomdb/scripts and fathomdb/qualification; raw local evidence remains under
+/mnt/data/tmp2/fathomdb-0830-slice60, remote under the task's product-final.
+Native default is NOTADOPTED; PTX0 persists. Actual public delivery remains
+separate pending Q2/new-kernel-namespace and exact five-package publication.
