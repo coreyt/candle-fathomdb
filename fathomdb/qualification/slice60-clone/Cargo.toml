@@ -1,0 +1,14 @@
+[package]
+name = "slice60-prechecked-clone"
+version = "0.0.0"
+edition = "2021"
+publish = false
+[workspace]
+[features]
+default = ["cuda"]
+cuda = []
+[dependencies]
+candle-core = { package = "candle-core-fathomdb", git = "https://github.com/coreyt/candle-fathomdb.git", rev = "952edb7dcd1e29563acedd485a3c1ce8ef07a85c", default-features = false, features = ["cuda"] }
+[patch.crates-io]
+cudarc-fathomdb = { git = "https://github.com/coreyt/cudarc.git", rev = "3509cd6bd83b44204be1880e833474ab0f75e060" }
+candle-kernels-fathomdb = { git = "https://github.com/coreyt/candle-fathomdb.git", rev = "952edb7dcd1e29563acedd485a3c1ce8ef07a85c" }

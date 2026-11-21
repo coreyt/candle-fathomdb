@@ -1,11 +1,18 @@
 """Select a bounded installed-child campaign and validate its actual output."""
+import hashlib
 import json
 import os
+import platform
+import pathlib
 import re
 import time
 
 
+ACTION = None
+
 def configuration(default_arms=('a', 'b')):
+    global ACTION
+    ACTION = None
     mode = os.environ.get('FATHOMDB_COORDINATED_CAMPAIGN', 'healthy')
     if mode not in ('healthy', 'reset-refuse', 'reset-drop'):
         raise RuntimeError('unknown coordinated campaign')
@@ -21,7 +28,33 @@ def configuration(default_arms=('a', 'b')):
             raise RuntimeError('fault requires final PTX0 subjects and explicit owner ruling')
         if os.environ.get('FATHOMDB_RESET_ACTION') != 'slice60-process-primary-v1' or 'FATHOMDB_VENUE_STARTED_MONOTONIC' not in os.environ:
             raise RuntimeError('fault requires reviewed action and shared venue clock')
+        rule = os.environ.get('FATHOMDB_FAULT_RESOURCE_RULE', 'original')
+        if rule not in ('original', 'r580-ram40-24-swap-report') or rule != 'original' and platform.machine() != 'x86_64':
+            raise RuntimeError('unknown fault resource protocol')
+        if platform.machine() == 'aarch64' and os.environ.get('FATHOMDB_ORIN_FAULT_VISIBILITY') != 'observed-only-total-gpu-unavailable':
+            raise RuntimeError('explicit owner disposition of Orin fault visibility required')
+        if rule == 'r580-ram40-24-swap-report' and (platform.node() != 'windchill3' or os.environ.get('FATHOMDB_GPU_UUID') != 'GPU-5f9cfc90-2be1-06a7-ce39-5a6d294b209b'):
+            raise RuntimeError('R580 alternative belongs only to the selected 3090 venue')
+        path = pathlib.Path(os.environ['FATHOMDB_RESET_ACTION_FILE']).resolve()
+        if not path.is_relative_to(pathlib.Path(os.environ['SLICE60_ROOT']).resolve()):
+            raise RuntimeError('action file must be in owned task storage')
+        payload = path.read_bytes()
+        if hashlib.sha256(payload).hexdigest() != os.environ['FATHOMDB_RESET_ACTION_SHA256']:
+            raise RuntimeError('reviewed action digest mismatch')
+        ACTION = json.loads(payload)
+        expected = {'action':'slice60-process-primary-v1','host':platform.node(),'arch':platform.machine(),
+                    'uuid':os.environ['FATHOMDB_GPU_UUID'],'resource_rule':rule,
+                    'visibility_rule':os.environ.get('FATHOMDB_ORIN_FAULT_VISIBILITY','nvml-compute-graphics'),
+                    'lock':str(pathlib.Path(os.environ['FATHOMDB_GPU_LOCK']).resolve()),
+                    'lock_inode':int(os.environ['FATHOMDB_GPU_LOCK_INODE'])}
+        if ACTION['venue'] != expected:
+            raise RuntimeError('reviewed action venue/resource/visibility mismatch')
     return mode, arms, start
+
+
+def bind_case(key, actual):
+    if ACTION is not None and ACTION['cases'].get(key) != actual:
+        raise RuntimeError('case differs from reviewed immutable action: '+key)
 
 
 def validate_child(text, mode, native_sha, uuid, private=False):

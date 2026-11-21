@@ -1,5 +1,5 @@
 import ctypes,fcntl,hashlib,json,os,pathlib,re,shutil,signal,subprocess,time
-from campaign import configuration, validate_child
+from campaign import configuration, validate_child, bind_case
 CAMPAIGN, ARMS, SESSION_START = configuration()
 if not __debug__:raise RuntimeError('optimized Python is not supported')
 if os.environ.get('AGENT_LONG')!='1':raise RuntimeError('set AGENT_LONG=1 for the approved qualification')
@@ -126,17 +126,20 @@ def rss(pid):
  return 0
 
 
-def run(arm,mode):
+def run(arm,mode,prepare_only=False):
  language='python'
  name=f'{language}-{arm}-{mode}';capture=O/f'{language}-{arm}-{CAMPAIGN}-database'
  if time.monotonic()-SESSION_START>=1800 or not resource()['ok'] or actors():raise RuntimeError(name+' failed precheck')
- cache=O/f'cache-{name}';cache.mkdir()
+ cache=O/f'cache-{name}'
+ if not prepare_only:cache.mkdir()
  env=os.environ.copy()
  for k in ['CUDA_FORCE_PTX_JIT','CUDA_DISABLE_PTX_JIT','CUDA_FORCE_JIT','CUDA_DISABLE_JIT','CUDA_CACHE_DISABLE','CUDA_CACHE_MAXSIZE','CUDA_MODULE_LOADING','FATHOMDB_RERANKER_CACHE','FATHOMDB_POOL_MODE']:env.pop(k,None)
  env.update(CUDA_VISIBLE_DEVICES=UUID,FATHOMDB_SELECTED_UUID=UUID,FATHOMDB_COORDINATED_RESET=mode,FATHOMDB_REQUIRE_LIVE='1',FATHOMDB_EMBED_DEVICE='cuda:0',FATHOMDB_RERANK_DEVICE='cuda:0',XDG_CACHE_HOME=str(B/'model-cache'),HF_HUB_OFFLINE='1',CUDA_CACHE_PATH=str(cache),FATHOMDB_CAPTURE_DIR=str(capture))
  record=next(x for x in json.loads((B/'evidence/python-installed-identities.json').read_text()) if x['arm']==arm)
  native=pathlib.Path(record['module']);native_sha=hashlib.sha256(native.read_bytes()).hexdigest();assert native_sha==record['sha256'] and hashlib.sha256(pathlib.Path(record['wheel']).read_bytes()).hexdigest()==record['wheel_sha256']
  cmd=[str(B/'installed'/arm/'python/bin/python'),'-I',str(CORE/'coordinate.py')]
+ bind_case(f'{language}/{CAMPAIGN}/{mode}',{'argv':cmd,'executable_sha256':hashlib.sha256(pathlib.Path(cmd[0]).read_bytes()).hexdigest(),'native_sha256':native_sha,'coordinator_sha256':hashlib.sha256(pathlib.Path(cmd[-1]).read_bytes()).hexdigest(),'actor_sha256':env.get('FATHOMDB_RESET_ACTOR_SHA256'),'capture_dir':str(capture)})
+ if prepare_only:return
  p=None;reason=None;error=None;count=0;last=None;gap=0;saw=False;started=time.monotonic();deadline=started
  with (O/(name+'.log')).open('w') as log,(O/(name+'.samples.jsonl')).open('w') as samples:
   log.write('COMMAND '+repr(cmd)+'\nENV '+repr({k:env.get(k) for k in ['CUDA_VISIBLE_DEVICES','FATHOMDB_SELECTED_UUID','FATHOMDB_COORDINATED_RESET','FATHOMDB_REQUIRE_LIVE','FATHOMDB_EMBED_DEVICE','FATHOMDB_RERANK_DEVICE','XDG_CACHE_HOME','CUDA_CACHE_PATH','FATHOMDB_CAPTURE_DIR','FATHOMDB_PACKAGE_DIR','FATHOMDB_NATIVE_PACKAGE','FATHOMDB_RESET_ACTOR','FATHOMDB_RESET_ACTOR_SHA256']})+'\n');log.flush()
@@ -166,12 +169,16 @@ def run(arm,mode):
  validate_child(text,mode,native_sha,UUID,private=True)
  print(name,'PASS',native_sha,'gap',gap,flush=True)
 
-models=json.loads((B/'evidence/model-cache-identity.json').read_text())
-for f in models['files']:
- q=B/'model-cache/fathomdb'/f['file'];assert q.stat().st_size==f['bytes'] and hashlib.sha256(q.read_bytes()).hexdigest()==f['sha256']
-O.mkdir();(O/'source-sha256.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p)+'\n' for p in [CORE/'campaign.py',CORE/'coordinate.py']))
-with L.open('rb') as lock:
- assert os.fstat(lock.fileno()).st_ino==LOCK_INODE;fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);session=SESSION_START;pre=resource(True);(O/'preflight.json').write_text(json.dumps({'campaign':CAMPAIGN,'arms':ARMS,'shared_venue_started_monotonic':SESSION_START,'action':os.environ.get('FATHOMDB_RESET_ACTION'),'owner_ruling':os.environ.get('FATHOMDB_RESET_AUTHORIZATION'),'resources':pre,'actors':actors(),'gpu_total_used':'unavailable','peer_visibility':'unprivileged fuser observed-only; NVML process APIs unsupported'}));assert pre['ok'] and not actors()
- for arm in ARMS:
-  run(arm,CAMPAIGN);run(arm,'recover')
- (O/'completed.json').write_text(json.dumps({'elapsed':time.monotonic()-session,'resources':resource(),'actors':actors()}))
+if __name__=='__main__':
+ models=json.loads((B/'evidence/model-cache-identity.json').read_text())
+ for f in models['files']:
+  q=B/'model-cache/fathomdb'/f['file'];assert q.stat().st_size==f['bytes'] and hashlib.sha256(q.read_bytes()).hexdigest()==f['sha256']
+ O.mkdir();(O/'source-sha256.txt').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p)+'\n' for p in [CORE/'campaign.py',CORE/'coordinate.py']))
+ with L.open('rb') as lock:
+  assert os.fstat(lock.fileno()).st_ino==LOCK_INODE;fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);session=SESSION_START;pre=resource(True);(O/'preflight.json').write_text(json.dumps({'campaign':CAMPAIGN,'arms':ARMS,'shared_venue_started_monotonic':SESSION_START,'action':os.environ.get('FATHOMDB_RESET_ACTION'),'owner_ruling':os.environ.get('FATHOMDB_RESET_AUTHORIZATION'),'fault_resource_rule':os.environ.get('FATHOMDB_FAULT_RESOURCE_RULE','original'),'orin_fault_visibility':os.environ.get('FATHOMDB_ORIN_FAULT_VISIBILITY'),'resources':pre,'actors':actors(),'gpu_total_used':'unavailable','peer_visibility':'unprivileged fuser observed-only; NVML process APIs unsupported'}));assert pre['ok'] and not actors()
+  if CAMPAIGN!='healthy':
+   for arm in ARMS:
+    run(arm,CAMPAIGN,prepare_only=True);run(arm,'recover',prepare_only=True)
+  for arm in ARMS:
+   run(arm,CAMPAIGN);run(arm,'recover')
+  (O/'completed.json').write_text(json.dumps({'elapsed':time.monotonic()-session,'resources':resource(),'actors':actors()}))

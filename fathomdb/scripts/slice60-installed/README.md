@@ -111,3 +111,63 @@ logs remain in task evidence. Two actual previous-monitor ENOENT errors and two
 live-reuse failures preceded the repair; all3 CPU controls now pass. Independent
 source review also exercised exit between actor lookup and RSS read. No hardware
 reset occurred in these controls.
+
+`native.py` reuses the same x86/Orin monitor functions through normal imports;
+SDK launcher entry points still run only when invoked as programs. Native subjects
+are fixed selectors: `product-model`, `clone`, `oom`, `registry`, or the existing
+read-only CLI `gpu`, `reranker-gpu`, `check-integrity`, `dump-row-counts` actions.
+Set `FATHOMDB_NATIVE_SUBJECT`, the exact `FATHOMDB_NATIVE_BINARY` and its
+`FATHOMDB_NATIVE_BINARY_SHA256`, plus the same venue/root/output/lease variables.
+There is no arbitrary shell/argv route. Rust selectors require1passed/0failed/
+0ignored. Normal short CLI diagnostics may finish before a sample; their records
+then make no body-sampling, peak-resource or PID claim. Their actual exit/JSON
+and before/after floors/observed peers remain checked. CLI diagnostics never
+count as model forwarding. Compare two real read-only DB outputs with the
+independent SQLite oracle using `check_cli_database.py --database <SDK-db>
+--integrity <run1-json> <run2-json> --counts <run1-json> <run2-json>
+--integrity-results <run1-result> <run2-result> --counts-results <run1-result>
+<run2-result>`; it requires the two authored source IDs/bodies and all five
+public canonical table counts. For these just-written fixtures it independently
+requires the current dirty FTS sanitation certificate and no root, dependency
+closure or erasure-request debt. Physical/semantic checks must be clean; logical
+output must be the one exact documented redacted retained-terms diagnosis and
+actual exit65. Counts must exit0. Any other finding, cause, phase, redaction or
+exit is rejected. Rows/counts/debt facts are checked before and after the CLI.
+The initial all-clean/exit0 assumption failed on the actual retained old-subject
+DB and remains preserved; accepted ADR0.8.27 CH1 plus parent contract direction
+corrected this isolated oracle. No recovery, erasure, mutation, wait or replay
+is used to manufacture a clean result.
+
+Fault campaigns additionally require `FATHOMDB_RESET_ACTION_FILE` and its
+`FATHOMDB_RESET_ACTION_SHA256`: one immutable reviewed JSON candidate for the
+venue, containing its action/host/arch/UUID/resource/visibility/lock/inode and
+exact case dictionaries. Every fault AND mandatory fresh recovery case is bound
+before the first fault child can start, and rechecked at launch. SDK bindings
+include argv, interpreter/native/coordinator/actor hashes and per-case DB path;
+native bindings include exact fixed-selector argv, binary hash, subject/mode.
+Native faults require the separate healthy model recovery binary and digest.
+The owner ruling label and matching action digest are selection checks, not an
+authorization grant. One shared venue start applies to all SDK/native cases.
+
+The default fault floors remain original. The optional
+`FATHOMDB_FAULT_RESOURCE_RULE=r580-ram40-24-swap-report` is restricted to
+windchill3/the selected3090 and remains HELD unless a later fault ruling names
+it: RAM40/24GiB start/stop, swap reported without a floor, unchanged observed
+8GiB GPU/16GiB owned RSS,8GiB GPU-free start, disk32/16GiB and120s/30min bounds.
+Orin faults require explicit future owner acceptance of
+`FATHOMDB_ORIN_FAULT_VISIBILITY=observed-only-total-gpu-unavailable`; original
+memory/swap/disk floors and strict unknown-peer refusal remain, with no absolute
+peer absence or hard total-device8GiB claim. Ordinary approval covers neither.
+
+Source review found native recovery binding order, pre-child peer/floor recheck,
+reranker diagnostic schema and already-exited short CLI races before execution.
+`test_native_preflight.py` first produced4semantic failures and2errors, then
+passed all5controls, including all3SDK prebindings and forbidden Popen on missing
+or mismatched recovery. `test_native_verdict.py` and `test_campaign.py` exercise
+case output and immutable action/venue selection without a GPU or database mock.
+
+`test_cli_oracle.py --database <actual-SDK-db> --integrity <retained-json>` checks
+the actual diagnosis/raw DB, wrong cause/phase/redaction refusal, duplicate or
+symlink/hardlink evidence aliases and optimized-execution refusal. The main
+oracle requires distinct real report/result paths for the two executions and
+refuses `python -O`; native receipt source hashes include the exact oracle.

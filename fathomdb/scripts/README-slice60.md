@@ -35,3 +35,11 @@ replay an unchanged campaign for a better result.
 same committed worker and criteria, use original Orin floors and verified live
 owned identities, and explicitly retain unsupported cross-user/GPU-total
 visibility limits. They do not grant actual reset authority.
+
+Final installed/direct-child tooling: `slice60-installed/native.py` shares the
+reviewed monitors for fixed owning model/clone/OOM, registry and read-only CLI
+subjects; `slice60-installed/check_cli_database.py` checks real CLI reports
+against raw SQLite and the two authored SDK rows. The out-of-package
+`fathomdb/qualification/slice60-clone/` target preserves the final pinned clone
+body and adds a pre-construction UUID guard. Their READMEs document exact
+inputs, commands, hash binding and held-fault limits. Raw logs stay in scratch.
