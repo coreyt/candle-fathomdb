@@ -1,6 +1,6 @@
 # Slice60 Candle migration and kernel design
 
-Status: PROPOSED; input trio2ee39305a78ed1463ff913f71dcd3d45ecbfd84f;
+Status: HISTORICAL_PLANNING_COMPLETE; input trio2ee39305a78ed1463ff913f71dcd3d45ecbfd84f;
 kernels182ceab0547348993b6dbec4b1aed610dcc8b23f; cudarc343b04fa.
 FathomDB release0.8.30 seq409 commissions the whole fork work. This amendment
 supersedes the old0.8.28 no-rebase/no-native scope only for Slice60. Historical
@@ -15,7 +15,7 @@ driverless mapping, baseline ARM CPU safety or .29 typed loss/drop behavior.
 Select published upstream Candle0.11.1 source
 59f8e903ca80a32ea7f8514b39748fc979e69e82, authenticated by registry
 candle-core0.11.1 .cargo_vcs_info.json. Current upstream main1a49dc27 is a
-comparison only. Keep unpublished fork0.12.0 package names, trimmed workspace
+comparison only. Preserve historical fork package names, trimmed workspace
 and CPU-safe defaults; kernels become0.11.1 source with qualified local deltas.
 Use exact qualified cudarc0.20.0. No publication/new dtype/backend or cutile
 adoption. Upstream removed ug; selected graph must lose its old cudarc0.17.8
@@ -227,3 +227,21 @@ delivery must retain their real OPEN/PASS outcomes in final source status.
 Historical published0.12/0.20 and upstreamkernel0.10.2 are immutable different
 source, not proof of matching new CUDA registry consumers. No publication or
 fault permission is conveyed by this owning documentation.
+
+## Final coalesced outcome
+
+Final consumed kernels and trio share CODE
+952edb7dcd1e29563acedd485a3c1ce8ef07a85c, with cudarc3509cd6. This
+planning branch is retained only as original scope/history, never a consumed
+kernel pin. The owning core checkout's `fathomdb/slice60.md` records final
+requirements, actual tests and tools. Native default was NOTADOPTED after the
+inconclusive Orin campaign; PTX0 remains product/crate default, with no75 flip.
+Both venues' selected native/PTX functional and final installed/fault/recovery
+controls completed; all fault children and fresh recoveries passed. Owner413
+explicitly authorized the Q2/new-kernel-namespace successor, and normal Cargo
+published candle-kernels-fathomdb0.13.0 from the qualified export. Actual public
+archive SHA256 is
+`b51dd9c1d22e2c176da122c08e9c674c9548a6d9fdf17834cc5318636cdc8a3f`,
+byte-identical to the staged candidate. Final common cohort/public consumer
+outcome is in product Slice60 status. Earlier OPEN/proposal wording above
+records its historical checkpoint, not the final disposition.
