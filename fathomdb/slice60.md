@@ -1,6 +1,6 @@
 # Slice60 Candle migration and kernel design
 
-Status: PROPOSED; input trio2ee39305a78ed1463ff913f71dcd3d45ecbfd84f;
+Status: QUALIFIED_AND_PUBLISHED; input trio2ee39305a78ed1463ff913f71dcd3d45ecbfd84f;
 kernels182ceab0547348993b6dbec4b1aed610dcc8b23f; cudarc343b04fa.
 FathomDB release0.8.30 seq409 commissions the whole fork work. This amendment
 supersedes the old0.8.28 no-rebase/no-native scope only for Slice60. Historical
@@ -18,8 +18,8 @@ candle-core0.11.1 .cargo_vcs_info.json. Current upstream main1a49dc27 is a
 comparison only. Existing fork0.12.0 packages are already published at2ee39305; candidate
 source requires fresh package versions. Keep package library names, trimmed workspace
 and CPU-safe defaults; kernels become0.11.1 source with qualified local deltas.
-Use exact qualified cudarc0.20.0. No publication/new dtype/backend or cutile
-adoption. Upstream removed ug; selected graph must lose its old cudarc0.17.8
+The final exact cudarc0.21.0 and publication disposition are recorded below.
+No new dtype/backend or cutile adoption. Upstream removed ug; selected graph must lose its old cudarc0.17.8
 edge. Existing-context public constructor remains necessary and must keep its
 existing default-stream semantics rather than silently using new per-thread
 stream behavior. Raw F32 helper retains its checked borrowed BLAS guard before
@@ -337,4 +337,10 @@ Product strict gate at f020b84af7b89df4588b69b4f7e558aafeae2f89 exited0:
 fathomdb/scripts and fathomdb/qualification; raw local evidence remains under
 /mnt/data/tmp2/fathomdb-0830-slice60, remote under the task's product-final.
 Native default is NOTADOPTED; PTX0 persists. Actual public delivery remains
-separate pending Q2/new-kernel-namespace and exact five-package publication.
+complete under owner seq413: normal Cargo published the exact five-package
+cohort, including the Q2/new-kernel-namespace successor. Actual public source
+checksums and external consumer delivery are recorded in product Slice60 status
+and the task evidence `evidence/public-registry-downloads.json`. Public core,
+nn and transformers archives differ from staged bytes only in Cargo.lock;
+all shipped source and normalized manifests are identical. Kernel and cudarc
+archives are byte-identical. Historical staged archive hashes are preserved.
